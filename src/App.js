@@ -4,7 +4,8 @@ import {
   Layout,
   Home,
   Listings,
-  Login
+  Login,
+  Register
 } from './components';
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
 
         <Route path='/listings' element={<Listings setTabValue={setTabValue} />} />
         <Route path='/login' element={<Login setTabValue={setTabValue} />} />
+        <Route path='/register' element={<Register setTabValue={setTabValue} />} />
 
         <Route path="*" element={<Navigate to="/" replace={true} />} />
 

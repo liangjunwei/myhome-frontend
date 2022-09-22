@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const Listings = ({ setTabValue }) => {
-    setTabValue('listings');
+    
+    useEffect(() => {
+        setTabValue('listings');
+        // eslint-disable-next-line
+    }, []);
 
     return (
         <div>
             Listings
         </div>
-    )
+    );
 }
 
 export default Listings;

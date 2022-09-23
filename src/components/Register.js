@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Box, TextField, Button } from '@mui/material';
 import { createAccount } from '../api';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-const Register = ({ setTabValue }) => {
+const Register = ({ setTabValue, setToken, setIsAdmin }) => {
+
+    let navigate = useNavigate();
 
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -16,18 +20,39 @@ const Register = ({ setTabValue }) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if(password !== confirmPassword) {
-            console.log("password not match");
+            Swal.fire({
+                icon: 'error',
+                title: `Confirm Password Not Match`,
+                text: `Please confirm your password again!`,
+                showCloseButton: true
+            });
         }
         else {
             const user = await createAccount(username, password);
         
             if(user.error) {
-                console.log(user.error);
-                console.log(user.message);
+                Swal.fire({
+                    icon: 'error',
+                    title: `${user.error}`,
+                    text: `${user.message}`,
+                    showCloseButton: true
+                });
             }
             else {
-                console.log(user.message);
-                console.log(user);
+                Swal.fire({
+                    icon: 'success',
+                    title: `Welcome, ${user.user.username}`,
+                    text: `${user.message}`,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+    
+                window.localStorage.setItem('token', user.token);
+                setToken(user.token);
+                window.localStorage.setItem('isAdmin', user.user.isAdmin);
+                setIsAdmin(user.user.isAdmin);
+    
+                navigate("/listings", { replace: true });
             }
         }
     }

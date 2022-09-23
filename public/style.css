@@ -8,3 +8,9 @@
 #register-link:visited {
         color: blue;
 }
+
+#nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

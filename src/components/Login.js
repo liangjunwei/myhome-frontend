@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Box, TextField, Button } from '@mui/material';
 import { userLogin } from '../api';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-const Login = ({ setTabValue }) => {
+const Login = ({ setTabValue, setToken, setIsAdmin }) => {
+
+    let navigate = useNavigate();
 
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
@@ -18,12 +21,29 @@ const Login = ({ setTabValue }) => {
         const user = await userLogin(username, password);
         
         if(user.error) {
-            console.log(user.error);
-            console.log(user.message);
+            Swal.fire({
+                icon: 'error',
+                title: `${user.error}`,
+                text: `${user.message}`,
+                showCloseButton: true
+            });
         }
         else {
-            console.log(user.message);
-            console.log(user);
+            Swal.fire({
+                icon: 'success',
+                title: `Welcome, ${user.user.username}`,
+                text: `${user.message}`,
+                showConfirmButton: false,
+                timer: 2000
+            });
+
+            window.localStorage.setItem('token', user.token);
+            setToken(user.token);
+            window.localStorage.setItem('isAdmin', user.user.isAdmin);
+            setIsAdmin(user.user.isAdmin);
+
+            setTabValue('listings');
+            navigate("/listings", { replace: true });
         }
     }
 

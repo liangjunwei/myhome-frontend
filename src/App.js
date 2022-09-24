@@ -5,7 +5,9 @@ import {
   Home,
   Listings,
   Login,
-  Register
+  Register,
+  MyListings,
+  Messages
 } from './components';
 
 const App = () => {
@@ -16,13 +18,15 @@ const App = () => {
   return (
     <BrowserRouter>
     <Routes>
-      <Route path='/' element={<Layout tabValue={tabValue} token={token} setToken={setToken} isAdmin={isAdmin} setIsAdmin={setIsAdmin}/>}>
+      <Route path='/' element={<Layout tabValue={tabValue} setTabValue={setTabValue} token={token} setToken={setToken} isAdmin={isAdmin} setIsAdmin={setIsAdmin}/>}>
 
         <Route index element={<Home setTabValue={setTabValue} />} />
 
         <Route path='/listings' element={<Listings setTabValue={setTabValue} />} />
-        <Route path='/login' element={<Login setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />
-        <Route path='/register' element={<Register setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />
+        {token ? null : <Route path='/login' element={<Login setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />}
+        {token ? null : <Route path='/register' element={<Register setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />}
+        {token ? <Route path='/mylistings' element={<MyListings setTabValue={setTabValue} />} /> : null}
+        {token ? <Route path='/messages' element={<Messages setTabValue={setTabValue} />} /> : null}
 
         <Route path="*" element={<Navigate to="/" replace={true} />} />
 

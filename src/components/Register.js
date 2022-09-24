@@ -52,6 +52,7 @@ const Register = ({ setTabValue, setToken, setIsAdmin }) => {
                 window.localStorage.setItem('isAdmin', user.user.isAdmin);
                 setIsAdmin(user.user.isAdmin);
     
+                setTabValue('listings');
                 navigate("/listings", { replace: true });
             }
         }

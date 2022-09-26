@@ -152,8 +152,10 @@ const Messages = ({ setTabValue, token }) => {
                                 return (
                                     <Item className='message' key={index} onClick={() => handleOpen(message)} sx={{background: message.new || selectedMessageIndex === 1 ? '' : '#f2f2f2'}}>
                                         <div>
-                                            {message.new && selectedMessageIndex === 0 ? <p style={{color: 'green'}}>New</p> : null}
-                                            {selectedMessageIndex === 0 ? <p>From: {message.sender}</p> : <p>To: {message.receiver}</p>}
+                                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                                {selectedMessageIndex === 0 ? <span>From: {message.sender}</span> : <span>To: {message.receiver}</span>}
+                                                {message.new && selectedMessageIndex === 0 ? <span style={{color: 'green'}}>New</span> : <></>}
+                                            </div>
                                             <p>Regarding listing: {message.listing}</p>
                                         </div>
                                     </Item>

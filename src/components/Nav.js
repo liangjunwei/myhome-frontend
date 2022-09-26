@@ -9,6 +9,7 @@ const Nav = ({ tabValue, setTabValue, token, setToken, isAdmin, setIsAdmin }) =>
     
     const handleLogout = () => {
         window.localStorage.clear();
+        sessionStorage.clear();
         setToken(null);
         setIsAdmin(null);
         setTabValue('listings');
@@ -17,7 +18,9 @@ const Nav = ({ tabValue, setTabValue, token, setToken, isAdmin, setIsAdmin }) =>
 
     return (
         <Box id='nav-bar' sx={{ width: '100%' }}>
-            <Tabs value={tabValue} textColor='primary' indicatorColor='primary' aria-label='nav-bar'>
+            <Tabs value={tabValue} textColor='primary' indicatorColor='primary' aria-label='nav-bar'
+                  variant='scrollable' scrollButtons={false}
+            >
                 <Tab value='home' label='Home' component={Link} to={'/'}/>
                 <Tab value='listings' label='Listings' component={Link} to={'/listings'}/>
                 {token ? null : <Tab value='login' label='Sign In' component={Link} to={'/login'}/>}
@@ -25,7 +28,7 @@ const Nav = ({ tabValue, setTabValue, token, setToken, isAdmin, setIsAdmin }) =>
                 {token ? <Tab value='messages' label='Message Center' component={Link} to={'/messages'}/> : null}
             </Tabs>
             {token ?
-                <Button sx={{marginRight: '20px'}} variant='outlined' endIcon={<LogoutIcon/>} onClick={handleLogout}>
+                <Button id='log-out-button' variant='outlined' endIcon={<LogoutIcon/>} onClick={handleLogout}>
                     Log Out
                 </Button>
             : null}

@@ -26,7 +26,7 @@ const App = () => {
         {token ? null : <Route path='/login' element={<Login setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />}
         {token ? null : <Route path='/register' element={<Register setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />}
         {token ? <Route path='/mylistings' element={<MyListings setTabValue={setTabValue} />} /> : null}
-        {token ? <Route path='/messages' element={<Messages setTabValue={setTabValue} />} /> : null}
+        {token ? <Route path='/messages' element={<Messages setTabValue={setTabValue} token={token}/>} /> : null}
 
         <Route path="*" element={<Navigate to="/" replace={true} />} />
 

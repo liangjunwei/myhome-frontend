@@ -129,13 +129,17 @@ const Messages = ({ setTabValue, token }) => {
         <Box sx={{display: 'flex', marginTop: '20px'}}>
             <Box sx={{ width: '30%', maxWidth: '300px', minHeight: '100vh', bgcolor: 'background.paper' }}>
                 <List component="nav" aria-label="main mailbox folders">
-                    <ListItemButton selected={selectedMessageIndex === 0} onClick={(event) => handleListItemClick(event, 0)}>
+                    <ListItemButton selected={selectedMessageIndex === 0} onClick={(event) => handleListItemClick(event, 0)}
+                                    sx={{display: 'flex', flexWrap: 'wrap'}}
+                    >
                         <ListItemIcon>
                             <InboxIcon />
                         </ListItemIcon>
                         <ListItemText primary="Inbox"/>
                     </ListItemButton>
-                    <ListItemButton selected={selectedMessageIndex === 1} onClick={(event) => handleListItemClick(event, 1)}>
+                    <ListItemButton selected={selectedMessageIndex === 1} onClick={(event) => handleListItemClick(event, 1)}
+                                    sx={{display: 'flex', flexWrap: 'wrap'}}
+                    >
                         <ListItemIcon>
                             <SendIcon />
                         </ListItemIcon>

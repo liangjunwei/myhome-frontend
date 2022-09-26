@@ -143,3 +143,18 @@ export const sendMessage = async (token, listingId, senderId, receiverId, conten
         console.error(e);
     }
 }
+
+// get home types
+export const getHomeTypes = async () => {
+    const url = `${BASE_URL}/types`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

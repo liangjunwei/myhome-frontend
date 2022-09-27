@@ -1,3 +1,4 @@
+import axios from 'axios';
 const BASE_URL = 'http://localhost:3000/api';
 
 // login
@@ -152,6 +153,19 @@ export const getHomeTypes = async () => {
         const response = await fetch(url);
         const data = await response.json();
 
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
+// upload images
+export const uploadImages = async (formData) => {
+    const url = `${BASE_URL}/images/upload`;
+
+    try {
+        const data = await axios.post(url, formData, { headers: {'Content-Type': 'multipart/form-data'}});
         return data;
     }
     catch(e) {

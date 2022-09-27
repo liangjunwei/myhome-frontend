@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, InputAdornment, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
-import { getHomeTypes } from '../api';
+import { getHomeTypes, uploadImages } from '../api';
+import ImageUploading from 'react-images-uploading';
 
 const CreateListing = ({ token }) => {
 
@@ -14,8 +15,23 @@ const CreateListing = ({ token }) => {
     const [pets, setPets] = useState(false);
     const [types, setTypes] = useState([]);
 
+    const [images, setImages] = useState([]);
+    const maxNumber = 10;
+
+    const handleImagesOnChange = (imageList, addUpdateIndex) => {
+        setImages(imageList);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if(images.length) {
+            const formData = new FormData();
+            for(let i = 0; i < images.length; i++) {
+                formData.append("images", images[i].file);
+            }
+            await uploadImages(formData);
+        }
     }
 
     const getTypes = async () => {
@@ -32,7 +48,7 @@ const CreateListing = ({ token }) => {
         <div style={{width: '70%', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <h2 style={{textAlign: 'center'}}>New Listing Form</h2>
             <p style={{textAlign: 'center', color: 'red'}}>Note: Admin will review and approve your listing within 24 hours. Please be patient.</p>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <TextField fullWidth id='new-address' label='Address' variant='outlined' value={address}
                             margin="normal" required onChange={(e) => setAddress(e.target.value)}
                 />
@@ -87,6 +103,46 @@ const CreateListing = ({ token }) => {
                 <FormControlLabel control={<Checkbox id="new-pets" onChange={(e) => setPets(e.target.checked)}/>} 
                                   label="Allow Pets?" labelPlacement="start"
                 />
+
+                <ImageUploading
+                    multiple
+                    value={images}
+                    onChange={handleImagesOnChange}
+                    maxNumber={maxNumber}
+                    dataURLKey="data_url"
+                >
+                    {({
+                        imageList,
+                        onImageUpload,
+                        onImageRemoveAll,
+                        onImageUpdate,
+                        onImageRemove,
+                        isDragging,
+                        dragProps,
+                    }) => (
+                            <div className="upload__image-wrapper">
+                                <button
+                                    type='button'
+                                    style={isDragging ? { color: 'red' } : undefined}
+                                    onClick={onImageUpload}
+                                    {...dragProps}
+                                >
+                                Click or Drop here
+                                </button>
+                                &nbsp;
+                                <button type='button' onClick={onImageRemoveAll}>Remove all images</button>
+                                {imageList.map((image, index) => (
+                                    <div key={index} className="image-item">
+                                        <img src={image['data_url']} alt="" width="100" />
+                                        <div className="image-item__btn-wrapper">
+                                        <button type='button' onClick={() => onImageUpdate(index)}>Update</button>
+                                        <button type='button' onClick={() => onImageRemove(index)}>Remove</button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                </ImageUploading>
 
                 <Button fullWidth id='create-listing' variant='contained' type='submit' size="large"
                         sx={{marginTop: '10px', marginBottom: '20px'}}

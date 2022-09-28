@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, TextField, InputAdornment, MenuItem, FormControlLabel, Checkbox } from '@mui/material';
+import { Button, TextField, InputAdornment, MenuItem, FormControlLabel, Checkbox, Box, ImageList, ImageListItem } from '@mui/material';
 import { getHomeTypes, uploadImages } from '../api';
 import ImageUploading from 'react-images-uploading';
+import UploadIcon from '@mui/icons-material/Upload';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ReplayIcon from '@mui/icons-material/Replay';
 
 const CreateListing = ({ token }) => {
 
@@ -104,6 +107,8 @@ const CreateListing = ({ token }) => {
                                   label="Allow Pets?" labelPlacement="start"
                 />
 
+                <h3 style={{marginBottom: '20px', marginTop: '20px'}}>Upload Images Below:</h3>
+
                 <ImageUploading
                     multiple
                     value={images}
@@ -120,18 +125,19 @@ const CreateListing = ({ token }) => {
                         isDragging,
                         dragProps,
                     }) => (
-                            <div className="upload__image-wrapper">
-                                <button
-                                    type='button'
-                                    style={isDragging ? { color: 'red' } : undefined}
+                            <div className="upload__image-wrapper" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                <Box
+                                    id='image-dropzone'
+                                    style={isDragging ? { background: '#e6f7ff' } : undefined}
                                     onClick={onImageUpload}
                                     {...dragProps}
                                 >
-                                Click or Drop here
-                                </button>
+                                <h3>Click or Drop Here</h3>
+                                <UploadIcon fontSize='large'/>
+                                </Box>
                                 &nbsp;
-                                <button type='button' onClick={onImageRemoveAll}>Remove all images</button>
-                                {imageList.map((image, index) => (
+                                <Button sx={{width: '30%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
+                                {/* {imageList.map((image, index) => (
                                     <div key={index} className="image-item">
                                         <img src={image['data_url']} alt="" width="100" />
                                         <div className="image-item__btn-wrapper">
@@ -139,7 +145,23 @@ const CreateListing = ({ token }) => {
                                         <button type='button' onClick={() => onImageRemove(index)}>Remove</button>
                                         </div>
                                     </div>
-                                ))}
+                                ))} */}
+                                <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={164}>
+                                    {imageList.map((image, index) => (
+                                        <ImageListItem key={index} className="image-item">
+                                        <img
+                                            src={image['data_url']}
+                                            alt=''
+                                            loading="lazy"
+                                            style={{height: '145px'}}
+                                        />
+                                        <div className="image-item__btn-wrapper" style={{display: 'flex', justifyContent: 'center'}}>
+                                            <ReplayIcon sx={{cursor: 'pointer'}} onClick={() => onImageUpdate(index)}/>
+                                            <DeleteIcon sx={{cursor: 'pointer'}} onClick={() => onImageRemove(index)}/>
+                                        </div>
+                                        </ImageListItem>
+                                    ))}
+                                </ImageList>
                             </div>
                         )}
                 </ImageUploading>

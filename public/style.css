@@ -24,6 +24,21 @@
     cursor: pointer;
 }
 
+#image-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 200px;
+    border-radius: 8px;
+    border-style: dashed;
+    border-color: #bfbfbf;
+    border-width: thick;
+    background: '#f2f2f2';
+    cursor: pointer;
+}
+
 @media screen and (max-width: 700px) {
     #nav-bar {
         flex-direction: column;

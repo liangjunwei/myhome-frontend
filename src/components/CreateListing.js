@@ -137,15 +137,6 @@ const CreateListing = ({ token }) => {
                                 </Box>
                                 &nbsp;
                                 <Button sx={{width: '30%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
-                                {/* {imageList.map((image, index) => (
-                                    <div key={index} className="image-item">
-                                        <img src={image['data_url']} alt="" width="100" />
-                                        <div className="image-item__btn-wrapper">
-                                        <button type='button' onClick={() => onImageUpdate(index)}>Update</button>
-                                        <button type='button' onClick={() => onImageRemove(index)}>Remove</button>
-                                        </div>
-                                    </div>
-                                ))} */}
                                 <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={164}>
                                     {imageList.map((image, index) => (
                                         <ImageListItem key={index} className="image-item">

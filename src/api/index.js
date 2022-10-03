@@ -160,12 +160,63 @@ export const getHomeTypes = async () => {
     }
 }
 
+// get approved listings
+export const getApprovedListings = async (searchString, typeId, bedrooms, bathrooms) => {
+    const url = `${BASE_URL}/listings/approved`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                searchString,
+                typeId,
+                bedrooms,
+                bathrooms
+            })
+        });
+        const data = await response.json();
+
+        for(let i = 0; i < data.length; i++) {
+            const { imageUrl } = await getCoverImageUrl(data[i].id);
+            data[i]["imageUrl"] = imageUrl;
+        }
+
+        const constructedData = [];
+        for(let i = 0; i < data.length; i += 12) {
+            constructedData.push(data.slice(i, i + 12));
+        }
+
+        return constructedData;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
 // upload images
 export const uploadImages = async (formData) => {
     const url = `${BASE_URL}/images/upload`;
 
     try {
         const data = await axios.post(url, formData, { headers: {'Content-Type': 'multipart/form-data'}});
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
+// get cover image url by listing id
+const getCoverImageUrl = async (listingId) => {
+    const url = `${BASE_URL}/images/cover/${listingId}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
         return data;
     }
     catch(e) {

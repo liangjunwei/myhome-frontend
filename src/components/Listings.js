@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Box, TextField, FormGroup, FormLabel, FormControlLabel, 
-         Checkbox, Button, Accordion, AccordionSummary, Typography,
-         AccordionDetails } from '@mui/material';
-import { getHomeTypes } from '../api';
+         Checkbox, Accordion, AccordionSummary, Typography,
+         AccordionDetails, InputAdornment, styled, Paper, Pagination,
+         Grid, CardMedia, CardContent } from '@mui/material';
+import { getHomeTypes, getApprovedListings } from '../api';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Listings = ({ setTabValue }) => {
 
@@ -17,18 +19,33 @@ const Listings = ({ setTabValue }) => {
     const [types, setTypes] = useState([]);
     const numberOfBedrooms = ['1', '2', '3', '4', '5'];
     const numberOfBathrooms = ['1', '2', '3', '4', '5'];
+
+    const [listings, setListings] = useState([]);
+
+    const [page, setPage] = useState(1);
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
     
     const getTypes = async () => {
         const homeTypes = await getHomeTypes();
         setTypes(homeTypes);
     }
 
-    const handleKeywordChange = (event) => {
-        setKeyword(event.target.value);
-        sessionStorage.setItem('keyword', JSON.stringify(event.target.value));
+    const getListings = async () => {
+        const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
+        setListings(allListings);
     }
 
-    const handleTypeIdsChange = (event) => {
+    const handleKeywordChange = async (event) => {
+        setKeyword(event.target.value);
+        sessionStorage.setItem('keyword', JSON.stringify(event.target.value));
+
+        const allListings = await getApprovedListings(event.target.value, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
+        setListings(allListings);
+    }
+
+    const handleTypeIdsChange = async (event) => {
         const copyTypeIds = {...typeIds};
         if(event.target.checked === false) {
             delete copyTypeIds[event.target.value];
@@ -38,9 +55,12 @@ const Listings = ({ setTabValue }) => {
         }
         setTypeIds(copyTypeIds);
         sessionStorage.setItem('typeIds', JSON.stringify(copyTypeIds));
+
+        const allListings = await getApprovedListings(keyword, Object.keys(copyTypeIds), Object.keys(bedrooms), Object.keys(bathrooms));
+        setListings(allListings);
     }
 
-    const handleBedroomsChange = (event) => {
+    const handleBedroomsChange = async (event) => {
         const copyBedrooms = {...bedrooms};
         if(event.target.checked === false) {
             delete copyBedrooms[event.target.value];
@@ -50,9 +70,12 @@ const Listings = ({ setTabValue }) => {
         }
         setBedrooms(copyBedrooms);
         sessionStorage.setItem('bedrooms', JSON.stringify(copyBedrooms));
+
+        const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(copyBedrooms), Object.keys(bathrooms));
+        setListings(allListings);
     }
 
-    const handleBathroomsChange = (event) => {
+    const handleBathroomsChange = async (event) => {
         const copyBathrooms = {...bathrooms};
         if(event.target.checked === false) {
             delete copyBathrooms[event.target.value];
@@ -62,11 +85,27 @@ const Listings = ({ setTabValue }) => {
         }
         setBathrooms(copyBathrooms);
         sessionStorage.setItem('bathrooms', JSON.stringify(copyBathrooms));
+
+        const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(copyBathrooms));
+        setListings(allListings);
     }
+
+    const handleOnClick = (id) => {
+        console.log(id);
+    }
+
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    }));
 
     useEffect(() => {
         setTabValue('listings');
         getTypes();
+        getListings();
         // eslint-disable-next-line
     }, []);
 
@@ -74,6 +113,7 @@ const Listings = ({ setTabValue }) => {
     console.log('typeid: ', Object.keys(typeIds));
     console.log('bedrooms: ', Object.keys(bedrooms));
     console.log('bathrooms: ', Object.keys(bathrooms));
+    console.log('listings: ', listings);
 
     return (
         <Container maxWidth="lg" sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
@@ -82,9 +122,17 @@ const Listings = ({ setTabValue }) => {
                     <Typography>Search and Filter</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Box component="form" sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <TextField sx={{width: '70%'}} id='keyword' label='Keyword' variant='outlined' value={keyword}
-                                margin="normal" onChange={handleKeywordChange}
+                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        <TextField id='keyword' placeholder='Search...' variant='standard' value={keyword} margin='normal'
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                )
+                            }}
+                            sx={{width: '70%'}}
+                            onChange={handleKeywordChange}
                         />
                         <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
                             <FormLabel component="legend" sx={{marginRight: '10px'}}>Home Types: </FormLabel>
@@ -116,13 +164,53 @@ const Listings = ({ setTabValue }) => {
                                 )
                             })}    
                         </FormGroup>
-                        <Button variant="contained" type='submit'>Search</Button>
                     </Box>
                 </AccordionDetails>
             </Accordion>
-            <Box>
-
+            {listings.length ?
+            <Box sx={{display: 'flex', minHeight: '100vh', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
+                <Grid container spacing={3} sx={{alignItems: 'stretch', marginTop: '1px'}}>
+                    {listings[page - 1].map(({ address, bedrooms, bathrooms, type, price, size, id, imageUrl }, index) => {
+                        return (
+                            <Grid item xs={12} sm={6} md={4} key={index}>
+                                <Item style={{height: '100%', cursor: 'pointer'}} onClick={() => handleOnClick(id)}>
+                                    <CardMedia
+                                        component='img'
+                                        src={imageUrl}
+                                        alt='listing-cover'
+                                        sx={{height: '200px'}}
+                                    />
+                                    <CardContent sx={{textAlign: 'left'}}>
+                                        <Typography gutterBottom sx={{color: 'black', fontFamily: 'Kanit'}}>
+                                        {address}
+                                        </Typography>
+                                        <Typography>
+                                        Bedroom(s): {bedrooms}
+                                        </Typography>
+                                        <Typography>
+                                        Bathroom(s): {bathrooms} 
+                                        </Typography>
+                                        <Typography>
+                                        ${price}/month
+                                        </Typography>
+                                        <Typography>
+                                        {size} sqft
+                                        </Typography>
+                                        <Typography>
+                                        Type: {type}
+                                        </Typography>
+                                    </CardContent>
+                                </Item>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+                <Pagination sx={{marginTop: '15px', marginBottom: '15px'}} 
+                            count={listings.length}
+                            page={page} color="primary" onChange={handlePageChange} 
+                />
             </Box>
+            : <h2 style={{textAlign: 'center', marginTop: '20px'}}>No result.</h2> }
         </Container>
     );
 }

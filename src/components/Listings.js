@@ -6,8 +6,11 @@ import { Container, Box, TextField, FormGroup, FormLabel, FormControlLabel,
 import { getHomeTypes, getApprovedListings } from '../api';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
+import { useNavigate } from "react-router-dom";
 
 const Listings = ({ setTabValue }) => {
+
+    let navigate = useNavigate();
 
     // search string and filter arrays
     const [keyword, setKeyword] = useState(JSON.parse(sessionStorage.getItem('keyword')) || '');
@@ -91,7 +94,7 @@ const Listings = ({ setTabValue }) => {
     }
 
     const handleOnClick = (id) => {
-        console.log(id);
+        navigate(`/listings/${id}`);
     }
 
     const Item = styled(Paper)(({ theme }) => ({
@@ -108,12 +111,6 @@ const Listings = ({ setTabValue }) => {
         getListings();
         // eslint-disable-next-line
     }, []);
-
-    console.log('keyword: ', keyword);
-    console.log('typeid: ', Object.keys(typeIds));
-    console.log('bedrooms: ', Object.keys(bedrooms));
-    console.log('bathrooms: ', Object.keys(bathrooms));
-    console.log('listings: ', listings);
 
     return (
         <Container maxWidth="lg" sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
@@ -173,7 +170,7 @@ const Listings = ({ setTabValue }) => {
                     {listings[page - 1].map(({ address, bedrooms, bathrooms, type, price, size, id, imageUrl }, index) => {
                         return (
                             <Grid item xs={12} sm={6} md={4} key={index}>
-                                <Item style={{height: '100%', cursor: 'pointer'}} onClick={() => handleOnClick(id)}>
+                                <Item style={{height: '100%', cursor: 'pointer'}} className='listing' onClick={() => handleOnClick(id)}>
                                     <CardMedia
                                         component='img'
                                         src={imageUrl}

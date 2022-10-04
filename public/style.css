@@ -24,6 +24,10 @@
     cursor: pointer;
 }
 
+.listing:hover {
+    box-shadow: 0 0 10px rgba(1, 1, 1, 0.354);
+}
+
 #image-dropzone {
     display: flex;
     flex-direction: column;
@@ -37,6 +41,10 @@
     border-width: thick;
     background: '#f2f2f2';
     cursor: pointer;
+}
+
+#gallery {
+    margin-top: 100px;
 }
 
 @media screen and (max-width: 700px) {

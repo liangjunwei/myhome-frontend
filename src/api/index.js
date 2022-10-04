@@ -223,3 +223,18 @@ const getCoverImageUrl = async (listingId) => {
         console.error(e);
     }
 }
+
+// get all image urls by listing id
+export const getAllImageUrls = async (listingId) => {
+    const url = `${BASE_URL}/images/${listingId}`;
+
+    try {
+        const response = await fetch(url);
+        const { imageUrls } = await response.json();
+
+        return imageUrls;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

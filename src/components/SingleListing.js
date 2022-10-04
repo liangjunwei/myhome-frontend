@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import { getAllImageUrls } from '../api';
+import { getAllImageUrls, getListingById } from '../api';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
-import { Container, Box } from '@mui/material';
+import { Container, Box, Button, TextField } from '@mui/material';
+import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const SingleListing = ({ token, setTabValue }) => {
+
+    let navigate = useNavigate();
     
     const { listingId } = useParams();
     const [imageUrls, setImageUrls] = useState([]);
+    const [listing, setListing] = useState({});
+    const [message, setMessage] = useState('');
 
     const getImageUrls = async () => {
         const allImageUrls = await getAllImageUrls(listingId);
@@ -25,17 +31,63 @@ const SingleListing = ({ token, setTabValue }) => {
         setImageUrls(constructedUrls);
     }
 
+    const getListing = async () => {
+        const listingById = await getListingById(listingId);
+        setListing(listingById);
+    }
+
+    const handleSendMessage = async (event) => {
+        event.preventDefault();
+
+        if(token) {
+            Swal.fire({
+                icon: 'success',
+                title: `Success`,
+                text: `Message sent!`,
+                showConfirmButton: false,
+                timer: 2000
+            });
+            setMessage('');
+        }
+        else {
+            navigate(`/login`);
+        }
+    }
+
     useEffect(() => {
         setTabValue('listings');
         getImageUrls();
+        getListing();
         // eslint-disable-next-line
     }, []);
 
+    console.log(listing);
     return (
         <Container maxWidth="md">
-            <Box>
+            <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
+                <h2 className='listing-info'>{listing.address}</h2>
+                <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>
+                <h3 className='listing-info'>Bathroom(s): {listing.bathrooms}</h3>
+                <h3 className='listing-info'>${listing.price}/month</h3>
+                <h3 className='listing-info'>{listing.size} sqft</h3>
+                <h3 className='listing-info'>Parking Space: {listing.parking}</h3>
+                {listing.pets ? <h3 className='listing-info'>Pets Allowed</h3> : <h3 className='listing-info'>Pets Not Allowed</h3>}
+                <h3 className='listing-info'>Post by {listing.username}</h3>
             </Box>
             <ImageGallery items={imageUrls} showPlayButton={false} showFullscreenButton={false} />
+            <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
+                <h3>Interested in this post? Send a message to owner!</h3>
+                <form onSubmit={handleSendMessage}  style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <TextField fullWidth id='send-message' label='Message' variant='outlined' value={message}
+                    margin="normal" required onChange={(e) => setMessage(e.target.value)}
+                    />
+                    <Button fullWidth id='reply-button' variant='contained' type='submit' size="large"
+                            sx={{marginTop: '10px', marginBottom: '20px'}}
+                    >
+                        Send
+                    </Button>
+                </form>
+            </Box>
         </Container>
     );
 }

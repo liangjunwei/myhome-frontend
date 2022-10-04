@@ -238,3 +238,18 @@ export const getAllImageUrls = async (listingId) => {
         console.error(e);
     }
 }
+
+// get listing by id
+export const getListingById = async (id) => {
+    const url = `${BASE_URL}/listings/${id}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

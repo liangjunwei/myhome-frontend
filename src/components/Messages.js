@@ -26,7 +26,6 @@ const Messages = ({ setTabValue, token }) => {
 
     const [listingId, setListingId] = useState(0);
     const [senderId, setSenderId] = useState(0);
-    const [receiverId, setReceiverId] = useState(0);
     const [listing, setListing] = useState('');
     const [sender, setSender] = useState('');
     const [receiver, setReceiver] = useState('');
@@ -46,7 +45,6 @@ const Messages = ({ setTabValue, token }) => {
         setListingId(message.listingId);
         setListing(message.listing);
         setSenderId(message.senderId);
-        setReceiverId(message.receiverId);
         setContent(message.content);
 
         if(selectedMessageIndex === 0) {
@@ -60,7 +58,6 @@ const Messages = ({ setTabValue, token }) => {
         setOpen(false);
         setListingId(0);
         setSenderId(0);
-        setReceiverId(0);
         setListing('');
         setReceiver('');
         setSender('');
@@ -97,7 +94,7 @@ const Messages = ({ setTabValue, token }) => {
     const handleReplyMessage = async (event) => {
         event.preventDefault();
         
-        await sendMessage(token, listingId, receiverId, senderId, reply);
+        await sendMessage(token, listingId, senderId, reply);
         await handleClose();
         Swal.fire({
             icon: 'success',

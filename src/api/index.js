@@ -120,7 +120,7 @@ export const updateMessageStatus = async (token, id) => {
 }
 
 // send message
-export const sendMessage = async (token, listingId, senderId, receiverId, content) => {
+export const sendMessage = async (token, listingId, receiverId, content) => {
     const url = `${BASE_URL}/messages/create`;
 
     try {
@@ -132,7 +132,6 @@ export const sendMessage = async (token, listingId, senderId, receiverId, conten
             },
             body: JSON.stringify({
                 listingId,
-                senderId,
                 receiverId,
                 content
             })

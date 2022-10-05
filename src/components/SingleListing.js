@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import { getAllImageUrls, getListingById } from '../api';
+import { getAllImageUrls, getListingById, sendMessage } from '../api';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { Container, Box, Button, TextField } from '@mui/material';
@@ -40,16 +40,34 @@ const SingleListing = ({ token, setTabValue }) => {
         event.preventDefault();
 
         if(token) {
-            Swal.fire({
-                icon: 'success',
-                title: `Success`,
-                text: `Message sent!`,
-                showConfirmButton: false,
-                timer: 2000
-            });
+            const newMessage = await sendMessage(token, listingId, listing.userId, message);
+
+            if(newMessage.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: `${newMessage.error}`,
+                    text: `${newMessage.message}`,
+                    showCloseButton: true
+                });
+            }
+            else {
+                Swal.fire({
+                    icon: 'success',
+                    title: `Success`,
+                    text: `Message sent!`,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
             setMessage('');
         }
         else {
+            Swal.fire({
+                icon: 'error',
+                title: `Message can't be sent`,
+                text: `Please login to perform this action!`,
+                showCloseButton: true
+            });
             navigate(`/login`);
         }
     }
@@ -61,7 +79,6 @@ const SingleListing = ({ token, setTabValue }) => {
         // eslint-disable-next-line
     }, []);
 
-    console.log(listing);
     return (
         <Container maxWidth="md">
             <Box sx={{marginTop: '20px', marginBottom: '20px'}}>

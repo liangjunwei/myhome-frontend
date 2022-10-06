@@ -252,3 +252,29 @@ export const getListingById = async (id) => {
         console.error(e);
     }
 }
+
+// get listings by user id
+export const getListingsByUser = async (token) => {
+    const url = `${BASE_URL}/listings/user`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+
+        for(let i = 0; i < data.length; i++) {
+            const { imageUrl } = await getCoverImageUrl(data[i].id);
+            data[i]["imageUrl"] = imageUrl;
+        }
+
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

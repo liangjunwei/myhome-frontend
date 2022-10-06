@@ -3,6 +3,7 @@ import { Box, List, ListItemButton, ListItemIcon, ListItemText, Divider } from '
 import AddIcon from '@mui/icons-material/Add';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import CreateListing from './CreateListing';
+import UserListings from './UserListings';
 
 const MyListings = ({ setTabValue, token }) => {
 
@@ -43,8 +44,8 @@ const MyListings = ({ setTabValue, token }) => {
             <Divider orientation="vertical" flexItem/>
             <Box sx={{ width: '70%', minHeight: '100vh', flexGrow: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 {selectedListingIndex === 1 ?
-                    <CreateListing />
-                : null}
+                    <CreateListing token={token}/> : <UserListings token={token}/>
+                }
             </Box>
             
         </Box>

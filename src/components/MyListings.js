@@ -44,7 +44,7 @@ const MyListings = ({ setTabValue, token }) => {
             <Divider orientation="vertical" flexItem/>
             <Box sx={{ width: '70%', minHeight: '100vh', flexGrow: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 {selectedListingIndex === 1 ?
-                    <CreateListing token={token}/> : <UserListings token={token}/>
+                    <CreateListing token={token} setSelectedListingIndex={setSelectedListingIndex}/> : <UserListings token={token}/>
                 }
             </Box>
             

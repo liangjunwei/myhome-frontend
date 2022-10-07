@@ -278,3 +278,33 @@ export const getListingsByUser = async (token) => {
         console.error(e);
     }
 }
+
+// create listing
+export const createListing = async (token, address, typeId, price, bedrooms, bathrooms, size, parking, pets) => {
+    const url = `${BASE_URL}/listings/create`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                address,
+                typeId,
+                price,
+                bedrooms,
+                bathrooms,
+                size,
+                parking,
+                pets
+            })
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

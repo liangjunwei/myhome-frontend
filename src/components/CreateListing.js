@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, TextField, InputAdornment, MenuItem, FormControlLabel, Checkbox, Box, ImageList, ImageListItem } from '@mui/material';
-import { getHomeTypes, uploadImages } from '../api';
+import { getHomeTypes, uploadImages, createListing } from '../api';
 import ImageUploading from 'react-images-uploading';
 import UploadIcon from '@mui/icons-material/Upload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReplayIcon from '@mui/icons-material/Replay';
+import Swal from 'sweetalert2';
 
-const CreateListing = ({ token }) => {
+const CreateListing = ({ token, setSelectedListingIndex }) => {
 
     const [address, setAddress] = useState('');
     const [typeId, setTypeId] = useState(1);
@@ -29,11 +30,46 @@ const CreateListing = ({ token }) => {
         event.preventDefault();
 
         if(images.length) {
-            const formData = new FormData();
-            for(let i = 0; i < images.length; i++) {
-                formData.append("images", images[i].file);
+            const newListing = await createListing (token, address, typeId, price, bedrooms, bathrooms, size, parking, pets);
+            
+            if(newListing) {
+                const formData = new FormData();
+
+                for(let i = 0; i < images.length; i++) {
+                    formData.append("images", images[i].file);
+                }
+
+                formData.append("listingId", newListing.id);
+
+                await uploadImages(formData);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: `Success`,
+                    text: `Listing Created!`,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                setSelectedListingIndex(0);
+                sessionStorage.setItem('selectedListingIndex', 0);
             }
-            await uploadImages(formData);
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: `Oops, something went wrong...`,
+                    text: `Please make sure your information is correct!`,
+                    showCloseButton: true
+                });
+            }
+        }
+        else {
+            Swal.fire({
+                icon: 'error',
+                title: `Missing Image Error`,
+                text: `You need to upload at least one image!`,
+                showCloseButton: true
+            });
         }
     }
 

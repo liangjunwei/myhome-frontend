@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from "react-router-dom";
-import { getAllImageUrls, getListingById, sendMessage } from '../api';
+import { getAllImageUrls, getListingById, sendMessage, disapproveListingById, approveListingById } from '../api';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
-import { Container, Box, Button, TextField } from '@mui/material';
+import { Container, Box, Button, TextField, Switch, FormControlLabel } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 
-const SingleListing = ({ token, setTabValue }) => {
+const SingleListing = ({ token, isAdmin }) => {
 
     let navigate = useNavigate();
     
@@ -15,6 +15,7 @@ const SingleListing = ({ token, setTabValue }) => {
     const [imageUrls, setImageUrls] = useState([]);
     const [listing, setListing] = useState({});
     const [message, setMessage] = useState('');
+    const [checked, setChecked] = useState(false);
 
     const getImageUrls = async () => {
         const allImageUrls = await getAllImageUrls(listingId);
@@ -33,6 +34,7 @@ const SingleListing = ({ token, setTabValue }) => {
 
     const getListing = async () => {
         const listingById = await getListingById(listingId);
+        setChecked(listingById.approved);
         setListing(listingById);
     }
 
@@ -72,8 +74,17 @@ const SingleListing = ({ token, setTabValue }) => {
         }
     }
 
+    const handleApproveListing = async (event) => {
+        setChecked(event.target.checked);
+        if(event.target.checked) {
+            await approveListingById(token, listing.id);
+        }
+        else {
+            await disapproveListingById(token, listing.id);
+        }
+    }
+
     useEffect(() => {
-        setTabValue('listings');
         getImageUrls();
         getListing();
         // eslint-disable-next-line
@@ -81,6 +92,16 @@ const SingleListing = ({ token, setTabValue }) => {
 
     return (
         <Container maxWidth="md">
+            {(isAdmin && listing) ? 
+            <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '20px'}}>
+                <FormControlLabel
+                    value="start"
+                    control={<Switch checked={checked} onChange={handleApproveListing}color="primary" />}
+                    label="Approved"
+                    labelPlacement="start"
+                />
+            </div>
+            : null}
             <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
                 <h2 className='listing-info'>{listing.address}</h2>
                 <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>

@@ -13,6 +13,7 @@ const Login = ({ setTabValue, setToken, setIsAdmin }) => {
     
     useEffect(() => {
         setTabValue('login');
+        sessionStorage.setItem('tabValue', JSON.stringify('login'));
         // eslint-disable-next-line
     }, []);
 

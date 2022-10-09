@@ -4,6 +4,7 @@ const Home = ({ setTabValue }) => {
     
     useEffect(() => {
         setTabValue('home');
+        sessionStorage.setItem('tabValue', JSON.stringify('home'));
         // eslint-disable-next-line
     }, []);
 

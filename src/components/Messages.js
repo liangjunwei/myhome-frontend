@@ -118,6 +118,7 @@ const Messages = ({ setTabValue, token }) => {
 
     useEffect(() => {
         setTabValue('messages');
+        sessionStorage.setItem('tabValue', JSON.stringify('messages'));
         getMessages();
         // eslint-disable-next-line
     }, []);

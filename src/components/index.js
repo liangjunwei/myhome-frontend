@@ -5,4 +5,5 @@ export {default as SingleListing} from './SingleListing';
 export {default as Login} from './Login';
 export {default as Register} from './Register';
 export {default as MyListings} from './MyListings';
+export {default as Review} from './Review';
 export {default as Messages} from './Messages';

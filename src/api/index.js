@@ -308,3 +308,74 @@ export const createListing = async (token, address, typeId, price, bedrooms, bat
         console.error(e);
     }
 }
+
+// get not approved yet listings
+export const getNotApprovedYetListings = async (token) => {
+    const url = `${BASE_URL}/listings/not-approved`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+
+        for(let i = 0; i < data.length; i++) {
+            const { imageUrl } = await getCoverImageUrl(data[i].id);
+            data[i]["imageUrl"] = imageUrl;
+        }
+
+        const constructedData = [];
+        for(let i = 0; i < data.length; i += 12) {
+            constructedData.push(data.slice(i, i + 12));
+        }
+
+        return constructedData;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
+// approve listing by id
+export const approveListingById = async (token, id) => {
+    const url = `${BASE_URL}/listings/approve/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
+// disapprove listing by id
+export const disapproveListingById = async (token, id) => {
+    const url = `${BASE_URL}/listings/disapprove/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

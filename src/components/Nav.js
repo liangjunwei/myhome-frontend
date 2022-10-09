@@ -24,7 +24,8 @@ const Nav = ({ tabValue, setTabValue, token, setToken, isAdmin, setIsAdmin }) =>
                 <Tab value='home' label='Home' component={Link} to={'/'}/>
                 <Tab value='listings' label='Listings' component={Link} to={'/listings'}/>
                 {token ? null : <Tab value='login' label='Sign In' component={Link} to={'/login'}/>}
-                {token ? <Tab value='mylistings' label='My Listings' component={Link} to={'/mylistings'}/> : null}
+                {(token && !isAdmin) ? <Tab value='mylistings' label='My Listings' component={Link} to={'/mylistings'}/> : null}
+                {(token && isAdmin) ? <Tab value='review' label='Review' component={Link} to={'/review'}/> : null}
                 {token ? <Tab value='messages' label='Message Center' component={Link} to={'/messages'}/> : null}
             </Tabs>
             {token ?

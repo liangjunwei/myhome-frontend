@@ -107,6 +107,7 @@ const Listings = ({ setTabValue }) => {
 
     useEffect(() => {
         setTabValue('listings');
+        sessionStorage.setItem('tabValue', JSON.stringify('listings'));
         getTypes();
         getListings();
         // eslint-disable-next-line

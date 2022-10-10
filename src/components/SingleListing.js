@@ -91,41 +91,47 @@ const SingleListing = ({ token, isAdmin }) => {
     }, []);
 
     return (
-        <Container maxWidth="md">
-            {(isAdmin && listing) ? 
-            <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '20px'}}>
-                <FormControlLabel
-                    value="start"
-                    control={<Switch checked={checked} onChange={handleApproveListing}color="primary" />}
-                    label="Approved"
-                    labelPlacement="start"
-                />
-            </div>
-            : null}
-            <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
-                <h2 className='listing-info'>{listing.address}</h2>
-                <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>
-                <h3 className='listing-info'>Bathroom(s): {listing.bathrooms}</h3>
-                <h3 className='listing-info'>${listing.price}/month</h3>
-                <h3 className='listing-info'>{listing.size} sqft</h3>
-                <h3 className='listing-info'>Parking Space: {listing.parking}</h3>
-                {listing.pets ? <h3 className='listing-info'>Pets Allowed</h3> : <h3 className='listing-info'>Pets Not Allowed</h3>}
-                <h3 className='listing-info'>Post by {listing.username}</h3>
-            </Box>
-            <ImageGallery items={imageUrls} showPlayButton={false} showFullscreenButton={false} />
-            <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
-                <h3>Interested in this post? Send a message to owner!</h3>
-                <form onSubmit={handleSendMessage}  style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                    <TextField fullWidth id='send-message' label='Message' variant='outlined' value={message}
-                    margin="normal" required onChange={(e) => setMessage(e.target.value)}
-                    />
-                    <Button fullWidth id='reply-button' variant='contained' type='submit' size="large"
-                            sx={{marginTop: '10px', marginBottom: '20px'}}
-                    >
-                        Send
-                    </Button>
-                </form>
-            </Box>
+        <Container maxWidth="md" sx={{minHeight: '100vh'}}>
+            {(isAdmin || listing.approved) ?
+                <div>
+                    {(isAdmin && listing) ? 
+                    <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '20px'}}>
+                        <FormControlLabel
+                            value="start"
+                            control={<Switch checked={checked} onChange={handleApproveListing}color="primary" />}
+                            label="Approved"
+                            labelPlacement="start"
+                        />
+                    </div>
+                    : null}
+                    <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
+                        <h2 className='listing-info'>{listing.address}</h2>
+                        <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>
+                        <h3 className='listing-info'>Bathroom(s): {listing.bathrooms}</h3>
+                        <h3 className='listing-info'>${listing.price}/month</h3>
+                        <h3 className='listing-info'>{listing.size} sqft</h3>
+                        <h3 className='listing-info'>Parking Space: {listing.parking}</h3>
+                        {listing.pets ? <h3 className='listing-info'>Pets Allowed</h3> : <h3 className='listing-info'>Pets Not Allowed</h3>}
+                        <h3 className='listing-info'>Post by {listing.username}</h3>
+                    </Box>
+                    <ImageGallery items={imageUrls} showPlayButton={false} showFullscreenButton={false} />
+                    <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
+                        <h3>Interested in this post? Send a message to owner!</h3>
+                        <form onSubmit={handleSendMessage}  style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                            <TextField fullWidth id='send-message' label='Message' variant='outlined' value={message}
+                            margin="normal" required onChange={(e) => setMessage(e.target.value)}
+                            />
+                            <Button fullWidth id='reply-button' variant='contained' type='submit' size="large"
+                                    sx={{marginTop: '10px', marginBottom: '20px'}}
+                            >
+                                Send
+                            </Button>
+                        </form>
+                    </Box>
+                </div>
+                : 
+                <h2 style={{textAlign: 'center', marginTop: '20px'}}>Unauthorized Error</h2>
+            }
         </Container>
     );
 }

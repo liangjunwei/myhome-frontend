@@ -40,7 +40,7 @@ const Login = ({ setTabValue, setToken, setIsAdmin }) => {
 
             window.localStorage.setItem('token', user.token);
             setToken(user.token);
-            window.localStorage.setItem('isAdmin', user.user.isAdmin);
+            window.localStorage.setItem('isAdmin', JSON.stringify(user.user.isAdmin));
             setIsAdmin(user.user.isAdmin);
 
             setTabValue('listings');

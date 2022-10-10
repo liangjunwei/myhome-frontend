@@ -309,6 +309,36 @@ export const createListing = async (token, address, typeId, price, bedrooms, bat
     }
 }
 
+// update listing
+export const updateListing = async (token, address, typeId, price, bedrooms, bathrooms, size, parking, pets, id) => {
+    const url = `${BASE_URL}/listings/update/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                address,
+                typeId,
+                price,
+                bedrooms,
+                bathrooms,
+                size,
+                parking,
+                pets
+            })
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
 // get not approved yet listings
 export const getNotApprovedYetListings = async (token) => {
     const url = `${BASE_URL}/listings/not-approved`;
@@ -374,6 +404,26 @@ export const disapproveListingById = async (token, id) => {
         });
         const data = await response.json();
         return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
+// owner check for update listing page
+export const listingOwnerCheck = async (token, id) => {
+    const url = `${BASE_URL}/listings/owner-check/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const { owner } = await response.json();
+        return owner;
     }
     catch(e) {
         console.error(e);

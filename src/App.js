@@ -9,7 +9,8 @@ import {
   Register,
   MyListings,
   Review,
-  Messages
+  Messages,
+  UpdateListing
 } from './components';
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
         {token ? null : <Route path='/login' element={<Login setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />}
         {token ? null : <Route path='/register' element={<Register setTabValue={setTabValue} setToken={setToken} setIsAdmin={setIsAdmin} />} />}
         {(token && !isAdmin) ? <Route path='/mylistings' element={<MyListings setTabValue={setTabValue} token={token} />} /> : null}
+        {(token && !isAdmin) ? <Route path='/mylistings/update/:listingId' element={<UpdateListing token={token} />} /> : null}
         {(token && isAdmin) ? <Route path='/review' element={<Review setTabValue={setTabValue} token={token} />} /> : null}
         {token ? <Route path='/messages' element={<Messages setTabValue={setTabValue} token={token}/>} /> : null}
 

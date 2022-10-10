@@ -3,8 +3,11 @@ import { getListingsByUser } from '../api';
 import {  Box, styled, Paper, Grid, CardMedia, CardContent, CardActions, Typography, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useNavigate } from "react-router-dom";
 
 const UserListings = ({ token }) => {
+
+    let navigate = useNavigate();
     
     const [myListings, setMyListings] = useState([]);
 
@@ -20,6 +23,10 @@ const UserListings = ({ token }) => {
         textAlign: 'center',
         color: theme.palette.text.secondary,
     }));
+
+    const handleEditButton = (id) => {
+        navigate(`/mylistings/update/${id}`);
+    }
 
     useEffect(() => {
         getMyListings();
@@ -62,7 +69,7 @@ const UserListings = ({ token }) => {
                                 </CardContent>
                                 {approved ? <p style={{color: 'green'}}>Approved</p> : <p style={{color: 'red'}}>Not Approved Yet</p>}
                                 <CardActions disableSpacing>
-                                    <IconButton aria-label="edit">
+                                    <IconButton aria-label="edit" onClick={() => handleEditButton(id)}>
                                         <EditIcon />
                                     </IconButton>
                                     <IconButton aria-label="delete">

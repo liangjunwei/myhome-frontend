@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from "react-router-dom";
 import { getAllImageUrls, getListingById, sendMessage, disapproveListingById, approveListingById } from '../api';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { Container, Box, Button, TextField, Switch, FormControlLabel } from '@mui/material';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Swal from 'sweetalert2';
 
 const SingleListing = ({ token, isAdmin }) => {

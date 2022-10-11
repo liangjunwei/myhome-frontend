@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { listingOwnerCheck, getListingById, getHomeTypes, updateListing, disapproveListingById,
-         getAllImages, setCoverImageById } from '../api';
+         getAllImages, setCoverImageById, deleteImageById } from '../api';
 import { useParams } from "react-router-dom";
 import { Container, Button, TextField, InputAdornment, MenuItem, FormControlLabel, 
          Checkbox, Box, ImageList, ImageListItem } from '@mui/material';
@@ -76,6 +76,18 @@ const UpdateListing = ({ token }) => {
 
     const handleSetCover = async (id) => {
         await setCoverImageById(token, id, images[0].id);
+        getImages();
+        Swal.fire({
+            icon: 'success',
+            title: `Success`,
+            text: `Listing Updated!`,
+            showConfirmButton: false,
+            timer: 2000
+        });
+    }
+
+    const handleDeleteImage = async (id) => {
+        await deleteImageById(token, id);
         getImages();
         Swal.fire({
             icon: 'success',
@@ -176,7 +188,7 @@ const UpdateListing = ({ token }) => {
                             {image.cover ? <h3 style={{textAlign: 'center'}}>Cover</h3> :
                             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button variant='outlined' size="small" onClick={() => handleSetCover(image.id)}>Set As Cover</Button>
-                                <DeleteIcon sx={{cursor: 'pointer', marginLeft: '5px'}} />
+                                <DeleteIcon sx={{cursor: 'pointer', marginLeft: '5px'}} onClick={() => handleDeleteImage(image.id)}/>
                             </div>
                             }
                             </ImageListItem>

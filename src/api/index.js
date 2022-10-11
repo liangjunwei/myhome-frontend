@@ -452,3 +452,23 @@ export const setCoverImageById = async (token, id, oldCoverId) => {
         console.error(e);
     }
 }
+
+// delete image by id
+export const deleteImageById = async (token, id) => {
+    const url = `${BASE_URL}/images/delete/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

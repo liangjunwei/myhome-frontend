@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { listingOwnerCheck, getListingById, getHomeTypes, updateListing, disapproveListingById,
-         getAllImages, setCoverImageById, deleteImageById } from '../api';
+         getAllImages, setCoverImageById, deleteImageById, uploadImages } from '../api';
 import { useParams } from "react-router-dom";
 import { Container, Button, TextField, InputAdornment, MenuItem, FormControlLabel, 
          Checkbox, Box, ImageList, ImageListItem } from '@mui/material';
 import Swal from 'sweetalert2';
+import UploadIcon from '@mui/icons-material/Upload';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ReplayIcon from '@mui/icons-material/Replay';
+import ImageUploading from 'react-images-uploading';
 
 const UpdateListing = ({ token }) => {
     
@@ -21,6 +24,9 @@ const UpdateListing = ({ token }) => {
     const [pets, setPets] = useState(false);
     const [types, setTypes] = useState([]);
     const [images, setImages] = useState([]);
+
+    const [newImages, setNewImages] = useState([]);
+    const maxNumber = 10;
 
     const checkOwner = async () => {
         const isOwner = await listingOwnerCheck(token, listingId);
@@ -80,7 +86,7 @@ const UpdateListing = ({ token }) => {
         Swal.fire({
             icon: 'success',
             title: `Success`,
-            text: `Listing Updated!`,
+            text: `Cover set!`,
             showConfirmButton: false,
             timer: 2000
         });
@@ -92,10 +98,48 @@ const UpdateListing = ({ token }) => {
         Swal.fire({
             icon: 'success',
             title: `Success`,
-            text: `Listing Updated!`,
+            text: `Image Deleted!`,
             showConfirmButton: false,
             timer: 2000
         });
+    }
+
+    const handleImagesOnChange = (imageList, addUpdateIndex) => {
+        setNewImages(imageList);
+    };
+
+    const handleUploadImages = async () => {
+
+        if(newImages.length) {
+            const formData = new FormData();
+
+            for(let i = 0; i < newImages.length; i++) {
+                formData.append("images", newImages[i].file);
+            }
+
+            formData.append("listingId", listingId);
+
+            await uploadImages(formData);
+
+            setNewImages([]);
+            getImages();
+
+            Swal.fire({
+                icon: 'success',
+                title: `Success`,
+                text: `Images Uploaded!`,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+        else {
+            Swal.fire({
+                icon: 'error',
+                title: `Missing Image Error`,
+                text: `You need to upload at least one image!`,
+                showCloseButton: true
+            });
+        }
     }
 
     useEffect(() => {
@@ -106,7 +150,6 @@ const UpdateListing = ({ token }) => {
         // eslint-disable-next-line
     }, []);
 
-    console.log(images);
     return (
         <Container maxWidth="sm" sx={{minHeight: '100vh'}}>
             {owner ? 
@@ -175,15 +218,16 @@ const UpdateListing = ({ token }) => {
                             Save Changes
                         </Button>
                     </form>
+
                     <h2 style={{textAlign: 'center', marginTop: '20px', marginBottom: '20px'}}>Edit Images Below:</h2>
-                    <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={164}>
+                    <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={180}>
                         {images.map((image, index) => (
                             <ImageListItem key={index} className="image-item">
                             <img
                                 src={image.url}
                                 alt='listingimage'
                                 loading="lazy"
-                                style={{minHeight: '140px', marginBottom: '10px'}}
+                                style={{maxHeight: '140px', minHeight: '140px', marginBottom: '10px'}}
                             />
                             {image.cover ? <h3 style={{textAlign: 'center'}}>Cover</h3> :
                             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -194,6 +238,60 @@ const UpdateListing = ({ token }) => {
                             </ImageListItem>
                         ))}
                     </ImageList>
+
+                    <h2 style={{textAlign: 'center', marginBottom: '20px', marginTop: '20px'}}>Upload More Images:</h2>
+                    <ImageUploading
+                        multiple
+                        value={newImages}
+                        onChange={handleImagesOnChange}
+                        maxNumber={maxNumber}
+                        dataURLKey="data_url"
+                    >
+                        {({
+                            imageList,
+                            onImageUpload,
+                            onImageRemoveAll,
+                            onImageUpdate,
+                            onImageRemove,
+                            isDragging,
+                            dragProps,
+                        }) => (
+                                <div className="upload__image-wrapper" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                    <Box
+                                        id='image-dropzone'
+                                        style={isDragging ? { background: '#e6f7ff' } : undefined}
+                                        onClick={onImageUpload}
+                                        {...dragProps}
+                                    >
+                                        <h3>Click or Drop Here</h3>
+                                        <UploadIcon fontSize='large'/>
+                                    </Box>
+                                    &nbsp;
+                                    <Button sx={{width: '30%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
+                                    <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={180}>
+                                        {imageList.map((image, index) => (
+                                            <ImageListItem key={index} className="image-item">
+                                            <img
+                                                src={image['data_url']}
+                                                alt=''
+                                                loading="lazy"
+                                                style={{maxHeight: '140px', minHeight: '140px', marginBottom: '10px'}}
+                                            />
+                                            <div className="image-item__btn-wrapper" style={{display: 'flex', justifyContent: 'center'}}>
+                                                <ReplayIcon sx={{cursor: 'pointer'}} onClick={() => onImageUpdate(index)}/>
+                                                <DeleteIcon sx={{cursor: 'pointer'}} onClick={() => onImageRemove(index)}/>
+                                            </div>
+                                            </ImageListItem>
+                                        ))}
+                                    </ImageList>
+                                </div>
+                            )}
+                    </ImageUploading>
+                    <Button fullWidth id='upload-images' variant='contained' onClick={handleUploadImages} size="large"
+                            sx={{marginTop: '10px', marginBottom: '20px'}}
+                    >
+                        Upload
+                    </Button>
                 </Box>
             : <h2 style={{textAlign: 'center', marginTop: '20px'}}>Unauthorized Error</h2>
             }

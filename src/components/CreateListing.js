@@ -173,14 +173,14 @@ const CreateListing = ({ token, setSelectedListingIndex }) => {
                                 </Box>
                                 &nbsp;
                                 <Button sx={{width: '30%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
-                                <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={164}>
+                                <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={180}>
                                     {imageList.map((image, index) => (
                                         <ImageListItem key={index} className="image-item">
                                         <img
                                             src={image['data_url']}
                                             alt=''
                                             loading="lazy"
-                                            style={{height: '145px'}}
+                                            style={{maxHeight: '140px', minHeight: '140px', marginBottom: '10px'}}
                                         />
                                         <div className="image-item__btn-wrapper" style={{display: 'flex', justifyContent: 'center'}}>
                                             <ReplayIcon sx={{cursor: 'pointer'}} onClick={() => onImageUpdate(index)}/>

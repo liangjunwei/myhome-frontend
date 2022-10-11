@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { listingOwnerCheck, getListingById, getHomeTypes, updateListing, disapproveListingById } from '../api';
+import { listingOwnerCheck, getListingById, getHomeTypes, updateListing, disapproveListingById,
+         getAllImages, setCoverImageById } from '../api';
 import { useParams } from "react-router-dom";
-import { Container, Button, TextField, InputAdornment, MenuItem, FormControlLabel, Checkbox, Box } from '@mui/material';
+import { Container, Button, TextField, InputAdornment, MenuItem, FormControlLabel, 
+         Checkbox, Box, ImageList, ImageListItem } from '@mui/material';
 import Swal from 'sweetalert2';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const UpdateListing = ({ token }) => {
     
@@ -17,6 +20,7 @@ const UpdateListing = ({ token }) => {
     const [parking, setParking] = useState(1);
     const [pets, setPets] = useState(false);
     const [types, setTypes] = useState([]);
+    const [images, setImages] = useState([]);
 
     const checkOwner = async () => {
         const isOwner = await listingOwnerCheck(token, listingId);
@@ -33,6 +37,11 @@ const UpdateListing = ({ token }) => {
         setSize(listing.size);
         setParking(listing.parking);
         setPets(listing.pets);
+    }
+
+    const getImages = async () => {
+        const allImages = await getAllImages(listingId);
+        setImages(allImages);
     }
 
     const getTypes = async () => {
@@ -65,13 +74,27 @@ const UpdateListing = ({ token }) => {
         }
     }
 
+    const handleSetCover = async (id) => {
+        await setCoverImageById(token, id, images[0].id);
+        getImages();
+        Swal.fire({
+            icon: 'success',
+            title: `Success`,
+            text: `Listing Updated!`,
+            showConfirmButton: false,
+            timer: 2000
+        });
+    }
+
     useEffect(() => {
         checkOwner();
         getListing();
+        getImages();
         getTypes();
         // eslint-disable-next-line
     }, []);
 
+    console.log(images);
     return (
         <Container maxWidth="sm" sx={{minHeight: '100vh'}}>
             {owner ? 
@@ -140,6 +163,25 @@ const UpdateListing = ({ token }) => {
                             Save Changes
                         </Button>
                     </form>
+                    <h2 style={{textAlign: 'center', marginTop: '20px', marginBottom: '20px'}}>Edit Images Below:</h2>
+                    <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={164}>
+                        {images.map((image, index) => (
+                            <ImageListItem key={index} className="image-item">
+                            <img
+                                src={image.url}
+                                alt='listingimage'
+                                loading="lazy"
+                                style={{minHeight: '140px', marginBottom: '10px'}}
+                            />
+                            {image.cover ? <h3 style={{textAlign: 'center'}}>Cover</h3> :
+                            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button variant='outlined' size="small" onClick={() => handleSetCover(image.id)}>Set As Cover</Button>
+                                <DeleteIcon sx={{cursor: 'pointer', marginLeft: '5px'}} />
+                            </div>
+                            }
+                            </ImageListItem>
+                        ))}
+                    </ImageList>
                 </Box>
             : <h2 style={{textAlign: 'center', marginTop: '20px'}}>Unauthorized Error</h2>
             }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getAllImageUrls, getListingById, sendMessage, disapproveListingById, approveListingById } from '../api';
+import { getAllImages, getListingById, sendMessage, disapproveListingById, approveListingById } from '../api';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
 import { Container, Box, Button, TextField, Switch, FormControlLabel } from '@mui/material';
@@ -17,14 +17,14 @@ const SingleListing = ({ token, isAdmin }) => {
     const [checked, setChecked] = useState(false);
 
     const getImageUrls = async () => {
-        const allImageUrls = await getAllImageUrls(listingId);
+        const allImages = await getAllImages(listingId);
         const constructedUrls = [];
         
-        for(let i = 0; i < allImageUrls.length; i++) {
+        for(let i = 0; i < allImages.length; i++) {
             constructedUrls.push(
                 {
-                    original: allImageUrls[i],
-                    thumbnail: allImageUrls[i]
+                    original: allImages[i].url,
+                    thumbnail: allImages[i].url
                 }
             );
         }

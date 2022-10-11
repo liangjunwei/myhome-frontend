@@ -223,15 +223,15 @@ const getCoverImageUrl = async (listingId) => {
     }
 }
 
-// get all image urls by listing id
-export const getAllImageUrls = async (listingId) => {
+// get all images by listing id
+export const getAllImages = async (listingId) => {
     const url = `${BASE_URL}/images/${listingId}`;
 
     try {
         const response = await fetch(url);
-        const { imageUrls } = await response.json();
+        const { allImages } = await response.json();
 
-        return imageUrls;
+        return allImages;
     }
     catch(e) {
         console.error(e);
@@ -424,6 +424,29 @@ export const listingOwnerCheck = async (token, id) => {
         });
         const { owner } = await response.json();
         return owner;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
+// set cover image
+export const setCoverImageById = async (token, id, oldCoverId) => {
+    const url = `${BASE_URL}/images/set-cover/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                oldCoverId
+            })
+        });
+        const data = await response.json();
+        return data;
     }
     catch(e) {
         console.error(e);

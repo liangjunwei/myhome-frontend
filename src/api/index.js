@@ -472,3 +472,43 @@ export const deleteImageById = async (token, id) => {
         console.error(e);
     }
 }
+
+// delete listing by id
+export const deleteListingById = async (token, id) => {
+    const url = `${BASE_URL}/listings/delete/${id}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}
+
+// delete images by listing id
+export const deleteImagesByListingId = async (token, listingId) => {
+    const url = `${BASE_URL}/images/delete-by-listing/${listingId}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        const data = await response.json();
+        return data;
+    }
+    catch(e) {
+        console.error(e);
+    }
+}

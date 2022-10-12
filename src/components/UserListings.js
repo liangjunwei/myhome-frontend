@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { getListingsByUser } from '../api';
+import { getListingsByUser, deleteImagesByListingId, deleteListingById } from '../api';
 import {  Box, styled, Paper, Grid, CardMedia, CardContent, CardActions, Typography, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const UserListings = ({ token }) => {
 
@@ -26,6 +27,46 @@ const UserListings = ({ token }) => {
 
     const handleEditButton = (id) => {
         navigate(`/mylistings/update/${id}`);
+    }
+
+    const handleDeleteButton = async (id) => {
+        let deleted = false;
+
+        await Swal.fire({
+            icon: 'warning',
+            title: 'Do you want to delete this listing?',
+            showDenyButton: true,
+            showCancelButton: true,
+            showConfirmButton: false,
+            denyButtonText: `Delete`,
+        }).then((result) => {
+            if(result.isDenied) {
+                deleted = true;
+                Swal.fire({
+                    icon: 'success',
+                    title: `Success`,
+                    text: `Listing Deleted!`,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        });
+
+        if(deleted) {
+            await deleteImagesByListingId(token, id);
+            await deleteListingById(token, id);
+            getMyListings();
+        }
+        // await deleteImagesByListingId(token, id);
+        // await deleteListingById(token, id);
+        // Swal.fire({
+        //     icon: 'success',
+        //     title: `Success`,
+        //     text: `Listing Deleted!`,
+        //     showConfirmButton: false,
+        //     timer: 2000
+        // });
+        // getMyListings();
     }
 
     useEffect(() => {
@@ -72,7 +113,7 @@ const UserListings = ({ token }) => {
                                     <IconButton aria-label="edit" onClick={() => handleEditButton(id)}>
                                         <EditIcon />
                                     </IconButton>
-                                    <IconButton aria-label="delete">
+                                    <IconButton aria-label="delete" onClick={() => handleDeleteButton(id)}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </CardActions>

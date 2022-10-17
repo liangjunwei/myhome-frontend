@@ -79,6 +79,7 @@ const CreateListing = ({ token, setSelectedListingIndex }) => {
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         getTypes();
         // eslint-disable-next-line
     }, []);

@@ -106,6 +106,7 @@ const Listings = ({ setTabValue }) => {
     }));
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         setTabValue('listings');
         sessionStorage.setItem('tabValue', JSON.stringify('listings'));
         getTypes();

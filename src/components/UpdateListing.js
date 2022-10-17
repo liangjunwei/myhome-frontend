@@ -143,6 +143,7 @@ const UpdateListing = ({ token }) => {
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         checkOwner();
         getListing();
         getImages();

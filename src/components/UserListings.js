@@ -60,6 +60,7 @@ const UserListings = ({ token }) => {
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         getMyListings();
         // eslint-disable-next-line
     }, []);

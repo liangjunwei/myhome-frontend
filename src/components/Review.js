@@ -32,6 +32,7 @@ const Review = ({ setTabValue, token }) => {
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         getListings();
         setTabValue('review');
         sessionStorage.setItem('tabValue', JSON.stringify('review'));

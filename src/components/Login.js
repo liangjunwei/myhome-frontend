@@ -12,6 +12,7 @@ const Login = ({ setTabValue, setToken, setIsAdmin }) => {
     const [password, setPassword] = useState('');
     
     useEffect(() => {
+        window.scrollTo(0, 0);
         setTabValue('login');
         sessionStorage.setItem('tabValue', JSON.stringify('login'));
         // eslint-disable-next-line

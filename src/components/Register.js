@@ -13,6 +13,7 @@ const Register = ({ setTabValue, setToken, setIsAdmin }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     
     useEffect(() => {
+        window.scrollTo(0, 0);
         setTabValue('login');
         sessionStorage.setItem('tabValue', JSON.stringify('login'));
         // eslint-disable-next-line

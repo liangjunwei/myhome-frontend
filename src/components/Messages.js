@@ -117,6 +117,7 @@ const Messages = ({ setTabValue, token }) => {
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         setTabValue('messages');
         sessionStorage.setItem('tabValue', JSON.stringify('messages'));
         getMessages();

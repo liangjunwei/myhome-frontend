@@ -84,6 +84,7 @@ const SingleListing = ({ token, isAdmin }) => {
     }
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         getImageUrls();
         getListing();
         // eslint-disable-next-line

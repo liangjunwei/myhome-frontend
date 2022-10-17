@@ -4,6 +4,7 @@ import { Container } from '@mui/material';
 const Home = ({ setTabValue }) => {
     
     useEffect(() => {
+        window.scrollTo(0, 0);
         setTabValue('home');
         sessionStorage.setItem('tabValue', JSON.stringify('home'));
         // eslint-disable-next-line

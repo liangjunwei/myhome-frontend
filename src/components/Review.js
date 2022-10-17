@@ -46,33 +46,36 @@ const Review = ({ setTabValue, token }) => {
                     {listings[page - 1].map(({ address, bedrooms, bathrooms, type, price, size, approved, id, imageUrl }, index) => {
                         return (
                             <Grid item xs={12} sm={6} md={4} key={index}>
-                                <Item style={{height: '100%', cursor: 'pointer'}} className='listing' onClick={() => handleOnClick(id)}>
-                                    <CardMedia
-                                        component='img'
-                                        src={imageUrl}
-                                        alt='listing-cover'
-                                        sx={{height: '200px'}}
-                                    />
-                                    <CardContent sx={{textAlign: 'left'}}>
-                                        <Typography gutterBottom sx={{color: 'black', fontFamily: 'Kanit'}}>
-                                        {address}
-                                        </Typography>
-                                        <Typography>
-                                        Bedroom(s): {bedrooms}
-                                        </Typography>
-                                        <Typography>
-                                        Bathroom(s): {bathrooms} 
-                                        </Typography>
-                                        <Typography>
-                                        ${price}/month
-                                        </Typography>
-                                        <Typography>
-                                        {size} sqft
-                                        </Typography>
-                                        <Typography>
-                                        Type: {type}
-                                        </Typography>
-                                    </CardContent>
+                                <Item style={{height: '100%', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}} 
+                                      className='listing' onClick={() => handleOnClick(id)}>
+                                    <div>
+                                        <CardMedia
+                                            component='img'
+                                            src={imageUrl}
+                                            alt='listing-cover'
+                                            sx={{height: '200px'}}
+                                        />
+                                        <CardContent sx={{textAlign: 'left'}}>
+                                            <Typography gutterBottom sx={{color: 'black', fontFamily: 'Kanit'}}>
+                                            {address}
+                                            </Typography>
+                                            <Typography>
+                                            Bedroom(s): {bedrooms}
+                                            </Typography>
+                                            <Typography>
+                                            Bathroom(s): {bathrooms} 
+                                            </Typography>
+                                            <Typography>
+                                            ${price}/month
+                                            </Typography>
+                                            <Typography>
+                                            {size} sqft
+                                            </Typography>
+                                            <Typography>
+                                            Type: {type}
+                                            </Typography>
+                                        </CardContent>
+                                    </div>
                                     {approved ? <p style={{color: 'green'}}>Approved</p> : <p style={{color: 'red'}}>Not Approved Yet</p>}
                                 </Item>
                             </Grid>
@@ -84,7 +87,7 @@ const Review = ({ setTabValue, token }) => {
                             page={page} color="primary" onChange={handlePageChange} 
                 />
             </Box>
-            : <h2 style={{textAlign: 'center', marginTop: '20px'}}>No Listing Yet.</h2> }
+            : <h2 className='small-title' style={{marginTop: '20px'}}>No Listing Yet.</h2> }
         </Container>
     );
 }

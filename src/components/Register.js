@@ -61,8 +61,8 @@ const Register = ({ setTabValue, setToken, setIsAdmin }) => {
 
     return (
         <Container maxWidth='xs' sx={{minHeight: '100vh'}}>
-            <Box>
-                <h2 style={{textAlign: 'center'}}>Register Account</h2>
+            <Box sx={{marginTop: '100px'}}>
+                <h2 className='small-title'>Register Account</h2>
                 <form onSubmit={handleSubmit}>
                     <TextField fullWidth id='register-username' label='Username' variant='outlined' value={username}
                                margin="normal" required onChange={(e) => setUserName(e.target.value)}

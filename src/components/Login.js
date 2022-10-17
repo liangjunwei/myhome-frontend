@@ -50,8 +50,8 @@ const Login = ({ setTabValue, setToken, setIsAdmin }) => {
 
     return (
         <Container maxWidth='xs' sx={{minHeight: '100vh'}}>
-            <Box>
-                <h2 style={{textAlign: 'center'}}>Sign In</h2>
+            <Box sx={{marginTop: '100px'}}>
+                <h2 className='small-title'>Sign In</h2>
                 <form onSubmit={handleSubmit}>
                     <TextField fullWidth id='login-username' label='Username' variant='outlined' value={username}
                                margin="normal" required onChange={(e) => setUserName(e.target.value)}

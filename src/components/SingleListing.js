@@ -104,7 +104,7 @@ const SingleListing = ({ token, isAdmin }) => {
                     </div>
                     : null}
                     <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
-                        <h2 className='listing-info'>{listing.address}</h2>
+                        <h2 className='small-title'>{listing.address}</h2>
                         <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>
                         <h3 className='listing-info'>Bathroom(s): {listing.bathrooms}</h3>
                         <h3 className='listing-info'>${listing.price}/month</h3>
@@ -115,7 +115,7 @@ const SingleListing = ({ token, isAdmin }) => {
                     </Box>
                     <ImageGallery items={imageUrls} showPlayButton={false} showFullscreenButton={false} />
                     <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
-                        <h3>Interested in this post? Send a message to owner!</h3>
+                        <h3 className='small-title'>Interested in this post? Send a message to owner!</h3>
                         <form onSubmit={handleSendMessage}  style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                             <TextField fullWidth id='send-message' label='Message' variant='outlined' value={message}
                             margin="normal" required onChange={(e) => setMessage(e.target.value)}
@@ -129,7 +129,7 @@ const SingleListing = ({ token, isAdmin }) => {
                     </Box>
                 </div>
                 : 
-                <h2 style={{textAlign: 'center', marginTop: '20px'}}>Unauthorized Error</h2>
+                <h2 className='small-title' style={{marginTop: '20px'}}>Unauthorized Error</h2>
             }
         </Container>
     );

@@ -154,7 +154,7 @@ const UpdateListing = ({ token }) => {
         <Container maxWidth="sm" sx={{minHeight: '100vh'}}>
             {owner ? 
                 <Box sx={{marginTop: '20px'}}>
-                    <h2 style={{textAlign: 'center'}}>Edit Listing Below:</h2>
+                    <h2 className='small-title'>Edit Listing Information Below:</h2>
                     <p style={{textAlign: 'center', color: 'red'}}>Note: Admin will review and approve your listing within 24 hours. Please be patient.</p>
                     <form onSubmit={handleSubmit} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                         <TextField fullWidth id='edit-address' label='Address' variant='outlined' value={address}
@@ -219,8 +219,8 @@ const UpdateListing = ({ token }) => {
                         </Button>
                     </form>
 
-                    <h2 style={{textAlign: 'center', marginTop: '20px', marginBottom: '20px'}}>Edit Images Below:</h2>
-                    <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={180}>
+                    <h2 className='small-title' style={{marginTop: '50px'}}>Edit Images Below:</h2>
+                    <ImageList sx={{ width: '100%', height: 450, borderWidth: '3px', borderStyle: 'solid' }} cols={3} rowHeight={180}>
                         {images.map((image, index) => (
                             <ImageListItem key={index} className="image-item">
                             <img
@@ -239,7 +239,7 @@ const UpdateListing = ({ token }) => {
                         ))}
                     </ImageList>
 
-                    <h2 style={{textAlign: 'center', marginBottom: '20px', marginTop: '20px'}}>Upload More Images:</h2>
+                    <h2 className='small-title' style={{marginTop: '50px'}}>Upload More Images:</h2>
                     <ImageUploading
                         multiple
                         value={newImages}
@@ -267,8 +267,9 @@ const UpdateListing = ({ token }) => {
                                         <UploadIcon fontSize='large'/>
                                     </Box>
                                     &nbsp;
-                                    <Button sx={{width: '30%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
-                                    <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={180}>
+                                    <Button sx={{width: '40%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
+                                    <h3 className='small-title' style={{marginTop: '30px'}}>Images Preview:</h3>
+                                    <ImageList sx={{ width: '100%', height: 450, borderWidth: '3px', borderStyle: 'solid' }} cols={3} rowHeight={180}>
                                         {imageList.map((image, index) => (
                                             <ImageListItem key={index} className="image-item">
                                             <img
@@ -288,12 +289,12 @@ const UpdateListing = ({ token }) => {
                             )}
                     </ImageUploading>
                     <Button fullWidth id='upload-images' variant='contained' onClick={handleUploadImages} size="large"
-                            sx={{marginTop: '10px', marginBottom: '20px'}}
+                            sx={{marginTop: '30px', marginBottom: '30px'}}
                     >
                         Upload
                     </Button>
                 </Box>
-            : <h2 style={{textAlign: 'center', marginTop: '20px'}}>Unauthorized Error</h2>
+            : <h2 style={{marginTop: '20px'}} className='small-title'>Unauthorized Error</h2>
             }
         </Container>
     );

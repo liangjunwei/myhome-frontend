@@ -203,12 +203,12 @@ const Listings = ({ setTabValue }) => {
                         )
                     })}
                 </Grid>
-                <Pagination sx={{marginTop: '15px', marginBottom: '15px'}} 
+                <Pagination sx={{marginTop: '50px', marginBottom: '50px'}} 
                             count={listings.length}
                             page={page} color="primary" onChange={handlePageChange} 
                 />
             </Box>
-            : <h2 style={{textAlign: 'center', marginTop: '20px'}}>No result.</h2> }
+            : <h2 className='small-title' style={{marginTop: '20px'}}>No result.</h2> }
         </Container>
     );
 }

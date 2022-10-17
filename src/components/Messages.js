@@ -169,7 +169,7 @@ const Messages = ({ setTabValue, token }) => {
                                 page={page} color="primary" onChange={handlePageChange} 
                         />
                     </div>
-                : <h2 style={{textAlign: 'center'}}>No message yet.</h2>
+                : <h2 className='small-title'>No message yet.</h2>
                 }
             </Box>
             <Modal

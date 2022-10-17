@@ -85,7 +85,7 @@ const CreateListing = ({ token, setSelectedListingIndex }) => {
 
     return (
         <div style={{width: '70%', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-            <h2 style={{textAlign: 'center'}}>New Listing Form</h2>
+            <h2 className='small-title'>New Listing Form</h2>
             <p style={{textAlign: 'center', color: 'red'}}>Note: Admin will review and approve your listing within 24 hours. Please be patient.</p>
             <form onSubmit={handleSubmit} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <TextField fullWidth id='new-address' label='Address' variant='outlined' value={address}
@@ -143,7 +143,7 @@ const CreateListing = ({ token, setSelectedListingIndex }) => {
                                   label="Allow Pets?" labelPlacement="start"
                 />
 
-                <h3 style={{marginBottom: '20px', marginTop: '20px'}}>Upload Images Below:</h3>
+                <h3 className='small-title' style={{marginTop: '30px'}}>Upload Images Below:</h3>
 
                 <ImageUploading
                     multiple
@@ -173,7 +173,8 @@ const CreateListing = ({ token, setSelectedListingIndex }) => {
                                 </Box>
                                 &nbsp;
                                 <Button sx={{width: '30%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
-                                <ImageList sx={{ width: '100%', height: 450 }} cols={3} rowHeight={180}>
+                                <h3 className='small-title' style={{marginTop: '30px'}}>Images Preview:</h3>
+                                <ImageList sx={{ width: '100%', height: 450, borderWidth: '3px', borderStyle: 'solid' }} cols={3} rowHeight={180}>
                                     {imageList.map((image, index) => (
                                         <ImageListItem key={index} className="image-item">
                                         <img
@@ -194,7 +195,7 @@ const CreateListing = ({ token, setSelectedListingIndex }) => {
                 </ImageUploading>
 
                 <Button fullWidth id='create-listing' variant='contained' type='submit' size="large"
-                        sx={{marginTop: '10px', marginBottom: '20px'}}
+                        sx={{marginTop: '30px', marginBottom: '30px'}}
                 >
                     Post
                 </Button>

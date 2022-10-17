@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Container } from '@mui/material';
 
 const Home = ({ setTabValue }) => {
     
@@ -9,9 +10,9 @@ const Home = ({ setTabValue }) => {
     }, []);
 
     return (
-        <div>
-            Home
-        </div>
+        <Container maxWidth="md" id='home-page' sx={{minHeight: '100vh'}}>
+            
+        </Container>
     );
 }
 

@@ -106,6 +106,7 @@ const SingleListing = ({ token, isAdmin }) => {
                     : null}
                     <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
                         <h2 className='small-title'>{listing.address}</h2>
+                        <h3 className='listing-info'>Type: {listing.type}</h3>
                         <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>
                         <h3 className='listing-info'>Bathroom(s): {listing.bathrooms}</h3>
                         <h3 className='listing-info'>${listing.price}/month</h3>

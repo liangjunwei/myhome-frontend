@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Box, TextField, FormGroup, FormLabel, FormControlLabel, 
          Checkbox, Accordion, AccordionSummary, Typography,
-         AccordionDetails, InputAdornment, styled, Paper, Pagination,
-         Grid, CardMedia, CardContent } from '@mui/material';
+         AccordionDetails, styled, Paper, Pagination,
+         Grid, CardMedia, CardContent, Button } from '@mui/material';
 import { getHomeTypes, getApprovedListings } from '../api';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
@@ -44,8 +44,18 @@ const Listings = ({ setTabValue }) => {
         setKeyword(event.target.value);
         sessionStorage.setItem('keyword', JSON.stringify(event.target.value));
 
-        const allListings = await getApprovedListings(event.target.value, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
+        if(event.target.value.length === 0) {
+            const allListings = await getApprovedListings(event.target.value, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
+            setListings(allListings);
+        }
+    }
+
+    const handleSearch = async (event) => {
+        event.preventDefault();
+
+        const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
         setListings(allListings);
+        setPage(1);
     }
 
     const handleTypeIdsChange = async (event) => {
@@ -61,6 +71,7 @@ const Listings = ({ setTabValue }) => {
 
         const allListings = await getApprovedListings(keyword, Object.keys(copyTypeIds), Object.keys(bedrooms), Object.keys(bathrooms));
         setListings(allListings);
+        setPage(1);
     }
 
     const handleBedroomsChange = async (event) => {
@@ -76,6 +87,7 @@ const Listings = ({ setTabValue }) => {
 
         const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(copyBedrooms), Object.keys(bathrooms));
         setListings(allListings);
+        setPage(1);
     }
 
     const handleBathroomsChange = async (event) => {
@@ -91,6 +103,7 @@ const Listings = ({ setTabValue }) => {
 
         const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(copyBathrooms));
         setListings(allListings);
+        setPage(1);
     }
 
     const handleOnClick = (id) => {
@@ -122,17 +135,14 @@ const Listings = ({ setTabValue }) => {
                 </AccordionSummary>
                 <AccordionDetails>
                     <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <TextField id='keyword' placeholder='Search...' variant='standard' value={keyword} margin='normal'
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                )
-                            }}
-                            sx={{width: '70%'}}
-                            onChange={handleKeywordChange}
-                        />
+                        <form onSubmit={handleSearch} style={{width: '70%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                            <TextField id='keyword' placeholder='Search...' variant='standard' value={keyword} margin='normal'
+                                    onChange={handleKeywordChange} sx={{flexGrow: 1}}
+                            />
+                            <Button type="submit" variant="contained" size="small" endIcon={<SearchIcon />} sx={{marginLeft: '10px'}}>
+                                Search
+                            </Button>
+                        </form>
                         <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
                             <FormLabel component="legend" sx={{marginRight: '10px'}}>Home Types: </FormLabel>
                             {types.map((type, index) => {

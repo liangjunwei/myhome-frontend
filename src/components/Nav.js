@@ -8,7 +8,6 @@ const Nav = ({ tabValue, setTabValue, token, setToken, isAdmin, setIsAdmin }) =>
     let navigate = useNavigate();
     
     const handleLogout = () => {
-        window.localStorage.clear();
         sessionStorage.clear();
         setToken(null);
         setIsAdmin(null);

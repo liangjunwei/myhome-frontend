@@ -15,9 +15,9 @@ import {
 
 const App = () => {
   const [tabValue, setTabValue] = useState(JSON.parse(sessionStorage.getItem('tabValue')) || 'home');
-  const [token, setToken] = useState(localStorage.getItem('token'));
-  const [isAdmin, setIsAdmin] = useState(JSON.parse(localStorage.getItem('isAdmin')));
-  
+  const [token, setToken] = useState(sessionStorage.getItem('token'));
+  const [isAdmin, setIsAdmin] = useState(JSON.parse(sessionStorage.getItem('isAdmin')));
+
   return (
     <BrowserRouter>
     <Routes>

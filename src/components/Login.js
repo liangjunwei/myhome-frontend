@@ -39,9 +39,9 @@ const Login = ({ setTabValue, setToken, setIsAdmin }) => {
                 timer: 2000
             });
 
-            window.localStorage.setItem('token', user.token);
+            sessionStorage.setItem('token', user.token);
             setToken(user.token);
-            window.localStorage.setItem('isAdmin', JSON.stringify(user.user.isAdmin));
+            sessionStorage.setItem('isAdmin', JSON.stringify(user.user.isAdmin));
             setIsAdmin(user.user.isAdmin);
 
             setTabValue('listings');

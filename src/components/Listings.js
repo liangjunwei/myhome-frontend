@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Box, TextField, FormGroup, FormLabel, FormControlLabel, 
          Checkbox, Accordion, AccordionSummary, Typography,
          AccordionDetails, styled, Paper, Pagination,
-         Grid, CardMedia, CardContent, Button } from '@mui/material';
+         Grid, CardMedia, CardContent, Button, CircularProgress } from '@mui/material';
 import { getHomeTypes, getApprovedListings } from '../api';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
@@ -25,37 +25,49 @@ const Listings = ({ setTabValue }) => {
 
     const [listings, setListings] = useState([]);
 
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(JSON.parse(sessionStorage.getItem('listingPage')) || 1);
     const handlePageChange = (event, value) => {
         setPage(value);
+        sessionStorage.setItem('listingPage', JSON.stringify(value));
     };
-    
+
+    const [loading, setLoading] = useState(true);
+
     const getTypes = async () => {
         const homeTypes = await getHomeTypes();
         setTypes(homeTypes);
     }
 
-    const getListings = async () => {
+    const getListings = async (keyword, typeIds, bedrooms, bathrooms, page) => {
         const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
         setListings(allListings);
+        setPage(page);
+        sessionStorage.setItem('listingPage', JSON.stringify(page));
+
+        setLoading(true);
+        const stopLoading = () => {
+            setLoading(false);
+            clearTimeout(loadingTimeout);
+        }
+        const loadingTimeout = setTimeout(stopLoading, 3000);
     }
 
     const handleKeywordChange = async (event) => {
         setKeyword(event.target.value);
-        sessionStorage.setItem('keyword', JSON.stringify(event.target.value));
 
         if(event.target.value.length === 0) {
-            const allListings = await getApprovedListings(event.target.value, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
-            setListings(allListings);
+            getListings(event.target.value, typeIds, bedrooms, bathrooms, page);
+            sessionStorage.setItem('keyword', JSON.stringify(event.target.value));
         }
     }
 
     const handleSearch = async (event) => {
         event.preventDefault();
-
-        const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(bathrooms));
-        setListings(allListings);
-        setPage(1);
+        getListings(keyword, typeIds, bedrooms, bathrooms, 1);
+        sessionStorage.setItem('keyword', JSON.stringify(keyword));
+        sessionStorage.setItem('typeIds', JSON.stringify(typeIds));
+        sessionStorage.setItem('bedrooms', JSON.stringify(bedrooms));
+        sessionStorage.setItem('bathrooms', JSON.stringify(bathrooms));
     }
 
     const handleTypeIdsChange = async (event) => {
@@ -67,11 +79,6 @@ const Listings = ({ setTabValue }) => {
             copyTypeIds[event.target.value] = true;
         }
         setTypeIds(copyTypeIds);
-        sessionStorage.setItem('typeIds', JSON.stringify(copyTypeIds));
-
-        const allListings = await getApprovedListings(keyword, Object.keys(copyTypeIds), Object.keys(bedrooms), Object.keys(bathrooms));
-        setListings(allListings);
-        setPage(1);
     }
 
     const handleBedroomsChange = async (event) => {
@@ -83,11 +90,6 @@ const Listings = ({ setTabValue }) => {
             copyBedrooms[event.target.value] = true;
         }
         setBedrooms(copyBedrooms);
-        sessionStorage.setItem('bedrooms', JSON.stringify(copyBedrooms));
-
-        const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(copyBedrooms), Object.keys(bathrooms));
-        setListings(allListings);
-        setPage(1);
     }
 
     const handleBathroomsChange = async (event) => {
@@ -99,11 +101,6 @@ const Listings = ({ setTabValue }) => {
             copyBathrooms[event.target.value] = true;
         }
         setBathrooms(copyBathrooms);
-        sessionStorage.setItem('bathrooms', JSON.stringify(copyBathrooms));
-
-        const allListings = await getApprovedListings(keyword, Object.keys(typeIds), Object.keys(bedrooms), Object.keys(copyBathrooms));
-        setListings(allListings);
-        setPage(1);
     }
 
     const handleOnClick = (id) => {
@@ -123,103 +120,109 @@ const Listings = ({ setTabValue }) => {
         setTabValue('listings');
         sessionStorage.setItem('tabValue', JSON.stringify('listings'));
         getTypes();
-        getListings();
+        getListings(keyword, typeIds, bedrooms, bathrooms, page);
         // eslint-disable-next-line
     }, []);
 
     return (
-        <Container maxWidth="lg" sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-            <Accordion sx={{marginTop: '20px'}}>
+        <Container maxWidth="lg" sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh', alignItems: 'center'}}>
+            <Accordion sx={{marginTop: '20px', width: '100%'}}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                     <Typography>Search and Filter</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <form onSubmit={handleSearch} style={{width: '70%', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <Box>
+                        <form onSubmit={handleSearch} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                             <TextField id='keyword' placeholder='Search...' variant='standard' value={keyword} margin='normal'
-                                    onChange={handleKeywordChange} sx={{flexGrow: 1}}
+                                    onChange={handleKeywordChange} sx={{width: '70%'}}
                             />
-                            <Button type="submit" variant="contained" size="small" endIcon={<SearchIcon />} sx={{marginLeft: '10px'}}>
+                            <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
+                                <FormLabel component="legend" sx={{marginRight: '10px'}}>Home Types: </FormLabel>
+                                {types.map((type, index) => {
+                                    return (
+                                        <FormControlLabel key={index} label={type.name}
+                                            control={<Checkbox checked={typeIds[type.id] ? true : false} value={type.id} onChange={handleTypeIdsChange}/>} 
+                                        />
+                                    )
+                                })}
+                            </FormGroup>
+                            <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
+                                <FormLabel component="legend" sx={{marginRight: '10px'}}>Bedrooms: </FormLabel>
+                                {numberOfBedrooms.map((bed, index) => {
+                                    return (
+                                        <FormControlLabel key={index} label={bed}
+                                            control={<Checkbox checked={bedrooms[bed] ? true : false} value={bed} onChange={handleBedroomsChange}/>} 
+                                        />
+                                    )
+                                })}
+                            </FormGroup>
+                            <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
+                                <FormLabel component="legend" sx={{marginRight: '10px'}}>Bathrooms: </FormLabel>
+                                {numberOfBathrooms.map((bath, index) => {
+                                    return (
+                                        <FormControlLabel key={index} label={bath}
+                                            control={<Checkbox checked={bathrooms[bath] ? true : false} value={bath} onChange={handleBathroomsChange}/>} 
+                                        />
+                                    )
+                                })}    
+                            </FormGroup>
+                            <Button type="submit" variant="contained" endIcon={<SearchIcon />} sx={{width: '40%', marginTop: '20px'}}>
                                 Search
                             </Button>
                         </form>
-                        <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
-                            <FormLabel component="legend" sx={{marginRight: '10px'}}>Home Types: </FormLabel>
-                            {types.map((type, index) => {
-                                return (
-                                    <FormControlLabel key={index} label={type.name}
-                                        control={<Checkbox checked={typeIds[type.id] ? true : false} value={type.id} onChange={handleTypeIdsChange}/>} 
-                                    />
-                                )
-                            })}
-                        </FormGroup>
-                        <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
-                            <FormLabel component="legend" sx={{marginRight: '10px'}}>Bedrooms: </FormLabel>
-                            {numberOfBedrooms.map((bed, index) => {
-                                return (
-                                    <FormControlLabel key={index} label={bed}
-                                        control={<Checkbox checked={bedrooms[bed] ? true : false} value={bed} onChange={handleBedroomsChange}/>} 
-                                    />
-                                )
-                            })}
-                        </FormGroup>
-                        <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
-                            <FormLabel component="legend" sx={{marginRight: '10px'}}>Bathrooms: </FormLabel>
-                            {numberOfBathrooms.map((bath, index) => {
-                                return (
-                                    <FormControlLabel key={index} label={bath}
-                                        control={<Checkbox checked={bathrooms[bath] ? true : false} value={bath} onChange={handleBathroomsChange}/>} 
-                                    />
-                                )
-                            })}    
-                        </FormGroup>
                     </Box>
                 </AccordionDetails>
             </Accordion>
-            {listings.length ?
-            <Box sx={{display: 'flex', minHeight: '100vh', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
-                <Grid container spacing={3} sx={{alignItems: 'stretch', marginTop: '1px'}}>
-                    {listings[page - 1].map(({ address, bedrooms, bathrooms, type, price, size, id, imageUrl }, index) => {
-                        return (
-                            <Grid item xs={12} sm={6} md={4} key={index}>
-                                <Item style={{height: '100%', cursor: 'pointer'}} className='listing' onClick={() => handleOnClick(id)}>
-                                    <CardMedia
-                                        component='img'
-                                        src={imageUrl}
-                                        alt='listing-cover'
-                                        sx={{height: '200px'}}
-                                    />
-                                    <CardContent sx={{textAlign: 'left'}}>
-                                        <Typography gutterBottom sx={{color: 'black', fontFamily: 'Kanit'}}>
-                                        {address}
-                                        </Typography>
-                                        <Typography>
-                                        Bedroom(s): {bedrooms}
-                                        </Typography>
-                                        <Typography>
-                                        Bathroom(s): {bathrooms} 
-                                        </Typography>
-                                        <Typography>
-                                        ${price}/month
-                                        </Typography>
-                                        <Typography>
-                                        {size} sqft
-                                        </Typography>
-                                        <Typography>
-                                        Type: {type}
-                                        </Typography>
-                                    </CardContent>
-                                </Item>
+            {loading ? 
+                <div hidden={!loading}><CircularProgress sx={{marginTop: '100px'}}/></div>
+                :
+                <div style={{width: '100%'}}>
+                    {listings.length ?
+                        <Box sx={{display: 'flex', minHeight: '100vh', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
+                            <Grid container spacing={3} sx={{alignItems: 'stretch', marginTop: '1px'}}>
+                                {listings[page - 1].map(({ address, bedrooms, bathrooms, type, price, size, id, imageUrl }, index) => {
+                                    return (
+                                        <Grid item xs={12} sm={6} md={4} key={index}>
+                                            <Item style={{height: '100%', cursor: 'pointer'}} className='listing' onClick={() => handleOnClick(id)}>
+                                                <CardMedia
+                                                    component='img'
+                                                    src={imageUrl}
+                                                    alt='listing-cover'
+                                                    sx={{height: '200px'}}
+                                                />
+                                                <CardContent sx={{textAlign: 'left'}}>
+                                                    <Typography gutterBottom sx={{color: 'black', fontFamily: 'Kanit'}}>
+                                                    {address}
+                                                    </Typography>
+                                                    <Typography>
+                                                    Bedroom(s): {bedrooms}
+                                                    </Typography>
+                                                    <Typography>
+                                                    Bathroom(s): {bathrooms} 
+                                                    </Typography>
+                                                    <Typography>
+                                                    ${price}/month
+                                                    </Typography>
+                                                    <Typography>
+                                                    {size} sqft
+                                                    </Typography>
+                                                    <Typography>
+                                                    Type: {type}
+                                                    </Typography>
+                                                </CardContent>
+                                            </Item>
+                                        </Grid>
+                                    )
+                                })}
                             </Grid>
-                        )
-                    })}
-                </Grid>
-                <Pagination sx={{marginTop: '50px', marginBottom: '50px'}} 
-                            count={listings.length}
-                            page={page} color="primary" onChange={handlePageChange} 
-                />
-            </Box>
-            : <h2 className='small-title' style={{marginTop: '20px'}}>No result.</h2> }
+                            <Pagination sx={{marginTop: '50px', marginBottom: '50px'}} 
+                                        count={listings.length}
+                                        page={page} color="primary" onChange={handlePageChange} 
+                            />
+                        </Box>
+                        : <h2 className='small-title' style={{marginTop: '20px'}}>No result.</h2> }
+                </div>
+            }
         </Container>
     );
 }

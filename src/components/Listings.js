@@ -54,11 +54,6 @@ const Listings = ({ setTabValue }) => {
 
     const handleKeywordChange = async (event) => {
         setKeyword(event.target.value);
-
-        if(event.target.value.length === 0) {
-            getListings(event.target.value, typeIds, bedrooms, bathrooms, page);
-            sessionStorage.setItem('keyword', JSON.stringify(event.target.value));
-        }
     }
 
     const handleSearch = async (event) => {
@@ -126,59 +121,60 @@ const Listings = ({ setTabValue }) => {
 
     return (
         <Container maxWidth="lg" sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh', alignItems: 'center'}}>
-            <Accordion sx={{marginTop: '20px', width: '100%'}}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-                    <Typography>Search and Filter</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                    <Box>
-                        <form onSubmit={handleSearch} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                            <TextField id='keyword' placeholder='Search...' variant='standard' value={keyword} margin='normal'
-                                    onChange={handleKeywordChange} sx={{width: '70%'}}
-                            />
-                            <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
-                                <FormLabel component="legend" sx={{marginRight: '10px'}}>Home Types: </FormLabel>
-                                {types.map((type, index) => {
-                                    return (
-                                        <FormControlLabel key={index} label={type.name}
-                                            control={<Checkbox checked={typeIds[type.id] ? true : false} value={type.id} onChange={handleTypeIdsChange}/>} 
-                                        />
-                                    )
-                                })}
-                            </FormGroup>
-                            <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
-                                <FormLabel component="legend" sx={{marginRight: '10px'}}>Bedrooms: </FormLabel>
-                                {numberOfBedrooms.map((bed, index) => {
-                                    return (
-                                        <FormControlLabel key={index} label={bed}
-                                            control={<Checkbox checked={bedrooms[bed] ? true : false} value={bed} onChange={handleBedroomsChange}/>} 
-                                        />
-                                    )
-                                })}
-                            </FormGroup>
-                            <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
-                                <FormLabel component="legend" sx={{marginRight: '10px'}}>Bathrooms: </FormLabel>
-                                {numberOfBathrooms.map((bath, index) => {
-                                    return (
-                                        <FormControlLabel key={index} label={bath}
-                                            control={<Checkbox checked={bathrooms[bath] ? true : false} value={bath} onChange={handleBathroomsChange}/>} 
-                                        />
-                                    )
-                                })}    
-                            </FormGroup>
-                            <Button type="submit" variant="contained" endIcon={<SearchIcon />} sx={{width: '40%', marginTop: '20px'}}>
-                                Search
-                            </Button>
-                        </form>
-                    </Box>
-                </AccordionDetails>
-            </Accordion>
             {loading ? 
                 <div hidden={!loading}><CircularProgress sx={{marginTop: '100px'}}/></div>
                 :
-                <div style={{width: '100%'}}>
+                <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <Accordion sx={{marginTop: '20px', width: '100%'}}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                            <Typography>Search and Filter</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box>
+                                <form onSubmit={handleSearch} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                    <TextField id='keyword' placeholder='Search...' variant='standard' value={keyword} margin='normal'
+                                            onChange={handleKeywordChange} sx={{width: '70%'}}
+                                    />
+                                    <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
+                                        <FormLabel component="legend" sx={{marginRight: '10px'}}>Home Types: </FormLabel>
+                                        {types.map((type, index) => {
+                                            return (
+                                                <FormControlLabel key={index} label={type.name}
+                                                    control={<Checkbox checked={typeIds[type.id] ? true : false} value={type.id} onChange={handleTypeIdsChange}/>} 
+                                                />
+                                            )
+                                        })}
+                                    </FormGroup>
+                                    <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
+                                        <FormLabel component="legend" sx={{marginRight: '10px'}}>Bedrooms: </FormLabel>
+                                        {numberOfBedrooms.map((bed, index) => {
+                                            return (
+                                                <FormControlLabel key={index} label={bed}
+                                                    control={<Checkbox checked={bedrooms[bed] ? true : false} value={bed} onChange={handleBedroomsChange}/>} 
+                                                />
+                                            )
+                                        })}
+                                    </FormGroup>
+                                    <FormGroup style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} row>
+                                        <FormLabel component="legend" sx={{marginRight: '10px'}}>Bathrooms: </FormLabel>
+                                        {numberOfBathrooms.map((bath, index) => {
+                                            return (
+                                                <FormControlLabel key={index} label={bath}
+                                                    control={<Checkbox checked={bathrooms[bath] ? true : false} value={bath} onChange={handleBathroomsChange}/>} 
+                                                />
+                                            )
+                                        })}    
+                                    </FormGroup>
+                                    <Button type="submit" variant="contained" endIcon={<SearchIcon />} sx={{width: '40%', marginTop: '20px'}}>
+                                        Search
+                                    </Button>
+                                </form>
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+            
                     {listings.length ?
-                        <Box sx={{display: 'flex', minHeight: '100vh', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
+                        <Box sx={{width: '100%', display: 'flex', minHeight: '100vh', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
                             <Grid container spacing={3} sx={{alignItems: 'stretch', marginTop: '1px'}}>
                                 {listings[page - 1].map(({ address, bedrooms, bathrooms, type, price, size, id, imageUrl }, index) => {
                                     return (
@@ -220,7 +216,8 @@ const Listings = ({ setTabValue }) => {
                                         page={page} color="primary" onChange={handlePageChange} 
                             />
                         </Box>
-                        : <h2 className='small-title' style={{marginTop: '20px'}}>No result.</h2> }
+                        : <h2 className='small-title' style={{marginTop: '20px'}}>No result.</h2> 
+                    }
                 </div>
             }
         </Container>

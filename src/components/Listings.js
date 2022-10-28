@@ -44,12 +44,7 @@ const Listings = ({ setTabValue }) => {
         setPage(page);
         sessionStorage.setItem('listingPage', JSON.stringify(page));
 
-        setLoading(true);
-        const stopLoading = () => {
-            setLoading(false);
-            clearTimeout(loadingTimeout);
-        }
-        const loadingTimeout = setTimeout(stopLoading, 3000);
+        setLoading(false);
     }
 
     const handleKeywordChange = async (event) => {
@@ -58,6 +53,8 @@ const Listings = ({ setTabValue }) => {
 
     const handleSearch = async (event) => {
         event.preventDefault();
+        setLoading(true);
+
         getListings(keyword, typeIds, bedrooms, bathrooms, 1);
         sessionStorage.setItem('keyword', JSON.stringify(keyword));
         sessionStorage.setItem('typeIds', JSON.stringify(typeIds));

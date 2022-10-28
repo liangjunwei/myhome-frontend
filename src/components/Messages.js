@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, List, ListItemButton, ListItemIcon, ListItemText, 
         Divider, Stack, Paper, styled, Pagination, Modal,
-        TextField, Button } from '@mui/material';
+        TextField, Button, CircularProgress } from '@mui/material';
 import InboxIcon from '@mui/icons-material/Inbox';
 import SendIcon from '@mui/icons-material/Send';
 import { getInboxMessages, getSentMessages, updateMessageStatus, sendMessage } from '../api';
@@ -11,6 +11,8 @@ const Messages = ({ setTabValue, token }) => {
     
     const [selectedMessageIndex, setSelectedMessageIndex] = useState(JSON.parse(sessionStorage.getItem('selectedMessageIndex') || 0));
     const [messages, setMessages] = useState([]);
+
+    const [loading, setLoading] = useState(true);
 
     const [page, setPage] = useState(1);
     const handlePageChange = (event, value) => {
@@ -114,6 +116,7 @@ const Messages = ({ setTabValue, token }) => {
             const sent = await getSentMessages(token);
             setMessages(sent);
         }
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -147,30 +150,36 @@ const Messages = ({ setTabValue, token }) => {
                 </List>
             </Box>
             <Divider orientation="vertical" flexItem/>
-            <Box sx={{ width: '70%', minHeight: '100vh', flexGrow: '1', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                {messages.length ?
-                    <div style={{width: '70%', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
-                        <Stack spacing={1} sx={{width: '100%'}}>
-                            {messages[page - 1].map((message, index) => {
-                                return (
-                                    <Item className='message' key={index} onClick={() => handleOpen(message)} sx={{background: message.new || selectedMessageIndex === 1 ? '' : '#f2f2f2'}}>
-                                        <div>
-                                            <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                                                {selectedMessageIndex === 0 ? <span>From: {message.sender}</span> : <span>To: {message.receiver}</span>}
-                                                {message.new && selectedMessageIndex === 0 ? <span style={{color: 'green'}}>New</span> : <></>}
-                                            </div>
-                                            <p>Regarding listing: {message.listing}</p>
-                                        </div>
-                                    </Item>
-                                );
-                            })}
-                        </Stack>
-                        <Pagination sx={{marginTop: '15px', marginBottom: '15px'}} 
-                                count={messages.length}
-                                page={page} color="primary" onChange={handlePageChange} 
-                        />
+            <Box sx={{ width: '70%', flexGrow: '1'}}>
+                {loading ? 
+                    <div hidden={!loading} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}><CircularProgress sx={{marginTop: '100px'}}/></div>
+                    :
+                    <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                        {messages.length ?
+                            <div style={{width: '70%', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'}}>
+                                <Stack spacing={1} sx={{width: '100%'}}>
+                                    {messages[page - 1].map((message, index) => {
+                                        return (
+                                            <Item className='message' key={index} onClick={() => handleOpen(message)} sx={{background: message.new || selectedMessageIndex === 1 ? '' : '#f2f2f2'}}>
+                                                <div>
+                                                    <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+                                                        {selectedMessageIndex === 0 ? <span>From: {message.sender}</span> : <span>To: {message.receiver}</span>}
+                                                        {message.new && selectedMessageIndex === 0 ? <span style={{color: 'green'}}>New</span> : <></>}
+                                                    </div>
+                                                    <p>Regarding listing: {message.listing}</p>
+                                                </div>
+                                            </Item>
+                                        );
+                                    })}
+                                </Stack>
+                                <Pagination sx={{marginTop: '15px', marginBottom: '15px'}} 
+                                        count={messages.length}
+                                        page={page} color="primary" onChange={handlePageChange} 
+                                />
+                            </div>
+                        : <h2 className='small-title'>No message yet.</h2>
+                        }
                     </div>
-                : <h2 className='small-title'>No message yet.</h2>
                 }
             </Box>
             <Modal

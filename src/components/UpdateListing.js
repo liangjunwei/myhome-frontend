@@ -3,7 +3,7 @@ import { listingOwnerCheck, getListingById, getHomeTypes, updateListing, disappr
          getAllImages, setCoverImageById, deleteImageById, uploadImages } from '../api';
 import { useParams } from "react-router-dom";
 import { Container, Button, TextField, InputAdornment, MenuItem, FormControlLabel, 
-         Checkbox, Box, ImageList, ImageListItem } from '@mui/material';
+         Checkbox, Box, ImageList, ImageListItem, CircularProgress } from '@mui/material';
 import Swal from 'sweetalert2';
 import UploadIcon from '@mui/icons-material/Upload';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,9 +28,12 @@ const UpdateListing = ({ token }) => {
     const [newImages, setNewImages] = useState([]);
     const maxNumber = 10;
 
+    const [loading, setLoading] = useState(true);
+
     const checkOwner = async () => {
         const isOwner = await listingOwnerCheck(token, listingId);
         setOwner(isOwner);
+        setLoading(false);
     }
 
     const getListing = async () => {
@@ -120,6 +123,7 @@ const UpdateListing = ({ token }) => {
             formData.append("listingId", listingId);
 
             await uploadImages(formData);
+            await disapproveListingById(token, listingId);
 
             setNewImages([]);
             getImages();
@@ -153,149 +157,155 @@ const UpdateListing = ({ token }) => {
 
     return (
         <Container maxWidth="sm" sx={{minHeight: '100vh'}}>
-            {owner ? 
-                <Box sx={{marginTop: '20px'}}>
-                    <h2 className='small-title'>Edit Listing Information Below:</h2>
-                    <p style={{textAlign: 'center', color: 'red'}}>Note: Admin will review and approve your listing within 24 hours. Please be patient.</p>
-                    <form onSubmit={handleSubmit} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                        <TextField fullWidth id='edit-address' label='Address' variant='outlined' value={address}
-                                    margin="normal" required onChange={(e) => setAddress(e.target.value)}
-                        />
-                        <TextField fullWidth id='edit-price' label='Price/Month' variant='outlined' value={price}
-                                    margin="normal" required onChange={(e) => setPrice(e.target.value)}
-                                    InputProps={{startAdornment: <InputAdornment position="start">$</InputAdornment>}}
-                        />
-                        <TextField fullWidth id='edit-size' label='Size' variant='outlined' value={size}
-                                    margin="normal" required onChange={(e) => setSize(e.target.value)}
-                                    InputProps={{startAdornment: <InputAdornment position="start">Sqft</InputAdornment>}}
-                        />
-                        {types.length ? 
-                            <TextField fullWidth id="edit-home-type" select label="Home Type" value={typeId}
-                                    margin="normal" onChange={(e) => setTypeId(e.target.value)}
-                            >
-                                {types.map((type, index) => (
-                                    <MenuItem key={index} value={type.id}>
-                                        {type.name}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                            : null
-                        }
-                        <TextField fullWidth id="edit-number-bedrooms" select label="Bedrooms" value={bedrooms}
-                                margin="normal" onChange={(e) => setBedrooms(e.target.value)}
-                        >
-                                <MenuItem value={1}>1</MenuItem>
-                                <MenuItem value={2}>2</MenuItem>
-                                <MenuItem value={3}>3</MenuItem>
-                                <MenuItem value={4}>4</MenuItem>
-                                <MenuItem value={5}>5</MenuItem>
-                        </TextField>
-                        <TextField fullWidth id="edit-number-bathrooms" select label="Bathrooms" value={bathrooms}
-                                margin="normal" onChange={(e) => setBathrooms(e.target.value)}
-                        >
-                                <MenuItem value={1}>1</MenuItem>
-                                <MenuItem value={2}>2</MenuItem>
-                                <MenuItem value={3}>3</MenuItem>
-                                <MenuItem value={4}>4</MenuItem>
-                                <MenuItem value={5}>5</MenuItem>
-                        </TextField>
-                        <TextField fullWidth id="edit-number-parking" select label="Parking" value={parking}
-                                margin="normal" onChange={(e) => setParking(e.target.value)}
-                        >
-                                <MenuItem value={1}>1</MenuItem>
-                                <MenuItem value={2}>2</MenuItem>
-                                <MenuItem value={3}>3</MenuItem>
-                                <MenuItem value={4}>4</MenuItem>
-                                <MenuItem value={5}>5</MenuItem>
-                        </TextField>
-
-                        <FormControlLabel control={<Checkbox id="eidt-pets" onChange={(e) => setPets(e.target.checked)}/>} 
-                                          label="Allow Pets?" labelPlacement="start" checked={pets}
-                        />
-
-                        <Button fullWidth id='edit-listing' variant='contained' type='submit' size="large"
-                                sx={{marginTop: '10px', marginBottom: '20px'}}
-                        >
-                            Save Changes
-                        </Button>
-                    </form>
-
-                    <h2 className='small-title' style={{marginTop: '50px'}}>Edit Images Below:</h2>
-                    <ImageList sx={{ width: '100%', height: 450, borderWidth: '3px', borderStyle: 'solid' }} cols={3} rowHeight={180}>
-                        {images.map((image, index) => (
-                            <ImageListItem key={index} className="image-item">
-                            <img
-                                src={image.url}
-                                alt='listingimage'
-                                loading="lazy"
-                                style={{maxHeight: '140px', minHeight: '140px', marginBottom: '10px'}}
-                            />
-                            {image.cover ? <h3 style={{textAlign: 'center'}}>Cover</h3> :
-                            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button variant='outlined' size="small" onClick={() => handleSetCover(image.id)}>Set As Cover</Button>
-                                <DeleteIcon sx={{cursor: 'pointer', marginLeft: '5px'}} onClick={() => handleDeleteImage(image.id)}/>
-                            </div>
-                            }
-                            </ImageListItem>
-                        ))}
-                    </ImageList>
-
-                    <h2 className='small-title' style={{marginTop: '50px'}}>Upload More Images:</h2>
-                    <ImageUploading
-                        multiple
-                        value={newImages}
-                        onChange={handleImagesOnChange}
-                        maxNumber={maxNumber}
-                        dataURLKey="data_url"
-                    >
-                        {({
-                            imageList,
-                            onImageUpload,
-                            onImageRemoveAll,
-                            onImageUpdate,
-                            onImageRemove,
-                            isDragging,
-                            dragProps,
-                        }) => (
-                                <div className="upload__image-wrapper" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                                    <Box
-                                        id='image-dropzone'
-                                        style={isDragging ? { background: '#e6f7ff' } : undefined}
-                                        onClick={onImageUpload}
-                                        {...dragProps}
+            {loading ? 
+                <div hidden={!loading} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}><CircularProgress sx={{marginTop: '100px'}}/></div>
+                :
+                <div>
+                    {owner ? 
+                        <Box sx={{marginTop: '20px'}}>
+                            <h2 className='small-title'>Edit Listing Information Below:</h2>
+                            <p style={{textAlign: 'center', color: 'red'}}>Note: Admin will review and approve your listing within 24 hours. Please be patient.</p>
+                            <form onSubmit={handleSubmit} style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                <TextField fullWidth id='edit-address' label='Address' variant='outlined' value={address}
+                                            margin="normal" required onChange={(e) => setAddress(e.target.value)}
+                                />
+                                <TextField fullWidth id='edit-price' label='Price/Month' variant='outlined' value={price}
+                                            margin="normal" required onChange={(e) => setPrice(e.target.value)}
+                                            InputProps={{startAdornment: <InputAdornment position="start">$</InputAdornment>}}
+                                />
+                                <TextField fullWidth id='edit-size' label='Size' variant='outlined' value={size}
+                                            margin="normal" required onChange={(e) => setSize(e.target.value)}
+                                            InputProps={{startAdornment: <InputAdornment position="start">Sqft</InputAdornment>}}
+                                />
+                                {types.length ? 
+                                    <TextField fullWidth id="edit-home-type" select label="Home Type" value={typeId}
+                                            margin="normal" onChange={(e) => setTypeId(e.target.value)}
                                     >
-                                        <h3>Click or Drop Here</h3>
-                                        <UploadIcon fontSize='large'/>
-                                    </Box>
-                                    &nbsp;
-                                    <Button sx={{width: '40%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
-                                    <h3 className='small-title' style={{marginTop: '30px'}}>Images Preview:</h3>
-                                    <ImageList sx={{ width: '100%', height: 450, borderWidth: '3px', borderStyle: 'solid' }} cols={3} rowHeight={180}>
-                                        {imageList.map((image, index) => (
-                                            <ImageListItem key={index} className="image-item">
-                                            <img
-                                                src={image['data_url']}
-                                                alt=''
-                                                loading="lazy"
-                                                style={{maxHeight: '140px', minHeight: '140px', marginBottom: '10px'}}
-                                            />
-                                            <div className="image-item__btn-wrapper" style={{display: 'flex', justifyContent: 'center'}}>
-                                                <ReplayIcon sx={{cursor: 'pointer'}} onClick={() => onImageUpdate(index)}/>
-                                                <DeleteIcon sx={{cursor: 'pointer'}} onClick={() => onImageRemove(index)}/>
-                                            </div>
-                                            </ImageListItem>
+                                        {types.map((type, index) => (
+                                            <MenuItem key={index} value={type.id}>
+                                                {type.name}
+                                            </MenuItem>
                                         ))}
-                                    </ImageList>
-                                </div>
-                            )}
-                    </ImageUploading>
-                    <Button fullWidth id='upload-images' variant='contained' onClick={handleUploadImages} size="large"
-                            sx={{marginTop: '30px', marginBottom: '30px'}}
-                    >
-                        Upload
-                    </Button>
-                </Box>
-            : <h2 style={{marginTop: '20px'}} className='small-title'>Unauthorized Error</h2>
+                                    </TextField>
+                                    : null
+                                }
+                                <TextField fullWidth id="edit-number-bedrooms" select label="Bedrooms" value={bedrooms}
+                                        margin="normal" onChange={(e) => setBedrooms(e.target.value)}
+                                >
+                                        <MenuItem value={1}>1</MenuItem>
+                                        <MenuItem value={2}>2</MenuItem>
+                                        <MenuItem value={3}>3</MenuItem>
+                                        <MenuItem value={4}>4</MenuItem>
+                                        <MenuItem value={5}>5</MenuItem>
+                                </TextField>
+                                <TextField fullWidth id="edit-number-bathrooms" select label="Bathrooms" value={bathrooms}
+                                        margin="normal" onChange={(e) => setBathrooms(e.target.value)}
+                                >
+                                        <MenuItem value={1}>1</MenuItem>
+                                        <MenuItem value={2}>2</MenuItem>
+                                        <MenuItem value={3}>3</MenuItem>
+                                        <MenuItem value={4}>4</MenuItem>
+                                        <MenuItem value={5}>5</MenuItem>
+                                </TextField>
+                                <TextField fullWidth id="edit-number-parking" select label="Parking" value={parking}
+                                        margin="normal" onChange={(e) => setParking(e.target.value)}
+                                >
+                                        <MenuItem value={1}>1</MenuItem>
+                                        <MenuItem value={2}>2</MenuItem>
+                                        <MenuItem value={3}>3</MenuItem>
+                                        <MenuItem value={4}>4</MenuItem>
+                                        <MenuItem value={5}>5</MenuItem>
+                                </TextField>
+
+                                <FormControlLabel control={<Checkbox id="eidt-pets" onChange={(e) => setPets(e.target.checked)}/>} 
+                                                label="Allow Pets?" labelPlacement="start" checked={pets}
+                                />
+
+                                <Button fullWidth id='edit-listing' variant='contained' type='submit' size="large"
+                                        sx={{marginTop: '10px', marginBottom: '20px'}}
+                                >
+                                    Save Changes
+                                </Button>
+                            </form>
+
+                            <h2 className='small-title' style={{marginTop: '50px'}}>Edit Images Below:</h2>
+                            <ImageList sx={{ width: '100%', height: 450, borderWidth: '3px', borderStyle: 'solid' }} cols={3} rowHeight={180}>
+                                {images.map((image, index) => (
+                                    <ImageListItem key={index} className="image-item">
+                                    <img
+                                        src={image.url}
+                                        alt='listingimage'
+                                        loading="lazy"
+                                        style={{maxHeight: '140px', minHeight: '140px', marginBottom: '10px'}}
+                                    />
+                                    {image.cover ? <h3 style={{textAlign: 'center'}}>Cover</h3> :
+                                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                        <Button variant='outlined' size="small" onClick={() => handleSetCover(image.id)}>Set As Cover</Button>
+                                        <DeleteIcon sx={{cursor: 'pointer', marginLeft: '5px'}} onClick={() => handleDeleteImage(image.id)}/>
+                                    </div>
+                                    }
+                                    </ImageListItem>
+                                ))}
+                            </ImageList>
+
+                            <h2 className='small-title' style={{marginTop: '50px'}}>Upload More Images:</h2>
+                            <ImageUploading
+                                multiple
+                                value={newImages}
+                                onChange={handleImagesOnChange}
+                                maxNumber={maxNumber}
+                                dataURLKey="data_url"
+                            >
+                                {({
+                                    imageList,
+                                    onImageUpload,
+                                    onImageRemoveAll,
+                                    onImageUpdate,
+                                    onImageRemove,
+                                    isDragging,
+                                    dragProps,
+                                }) => (
+                                        <div className="upload__image-wrapper" style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                            <Box
+                                                id='image-dropzone'
+                                                style={isDragging ? { background: '#e6f7ff' } : undefined}
+                                                onClick={onImageUpload}
+                                                {...dragProps}
+                                            >
+                                                <h3>Click or Drop Here</h3>
+                                                <UploadIcon fontSize='large'/>
+                                            </Box>
+                                            &nbsp;
+                                            <Button sx={{width: '40%', marginBottom: '20px'}} type='button' variant="contained" color="error" onClick={onImageRemoveAll}>Remove all images</Button>
+                                            <h3 className='small-title' style={{marginTop: '30px'}}>Images Preview:</h3>
+                                            <ImageList sx={{ width: '100%', height: 450, borderWidth: '3px', borderStyle: 'solid' }} cols={3} rowHeight={180}>
+                                                {imageList.map((image, index) => (
+                                                    <ImageListItem key={index} className="image-item">
+                                                    <img
+                                                        src={image['data_url']}
+                                                        alt=''
+                                                        loading="lazy"
+                                                        style={{maxHeight: '140px', minHeight: '140px', marginBottom: '10px'}}
+                                                    />
+                                                    <div className="image-item__btn-wrapper" style={{display: 'flex', justifyContent: 'center'}}>
+                                                        <ReplayIcon sx={{cursor: 'pointer'}} onClick={() => onImageUpdate(index)}/>
+                                                        <DeleteIcon sx={{cursor: 'pointer'}} onClick={() => onImageRemove(index)}/>
+                                                    </div>
+                                                    </ImageListItem>
+                                                ))}
+                                            </ImageList>
+                                        </div>
+                                    )}
+                            </ImageUploading>
+                            <Button fullWidth id='upload-images' variant='contained' onClick={handleUploadImages} size="large"
+                                    sx={{marginTop: '30px', marginBottom: '30px'}}
+                            >
+                                Upload
+                            </Button>
+                        </Box>
+                        : <h2 style={{marginTop: '20px'}} className='small-title'>Unauthorized Error</h2>
+                    }
+                </div>
             }
         </Container>
     );

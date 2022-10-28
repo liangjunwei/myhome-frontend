@@ -94,7 +94,7 @@ const SingleListing = ({ token, isAdmin }) => {
     }, []);
 
     return (
-        <Container maxWidth="md" sx={{minHeight: '100vh', }}>
+        <Container maxWidth="md" sx={{minHeight: '100vh'}}>
             {loading ? 
                 <div hidden={!loading} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}><CircularProgress sx={{marginTop: '100px'}}/></div>
                 :

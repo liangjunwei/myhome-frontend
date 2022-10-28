@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getListingsByUser, deleteImagesByListingId, deleteListingById } from '../api';
-import {  Box, styled, Paper, Grid, CardMedia, CardContent, CardActions, Typography, IconButton } from '@mui/material';
+import {  Box, styled, Paper, Grid, CardMedia, CardContent, CardActions, Typography, IconButton, CircularProgress } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from "react-router-dom";
@@ -9,12 +9,15 @@ import Swal from 'sweetalert2';
 const UserListings = ({ token }) => {
 
     let navigate = useNavigate();
+
+    const [loading, setLoading] = useState(true);
     
     const [myListings, setMyListings] = useState([]);
 
     const getMyListings = async () => {
         const listings = await getListingsByUser(token);
         setMyListings(listings);
+        setLoading(false);
     }
 
     const Item = styled(Paper)(({ theme }) => ({
@@ -67,58 +70,65 @@ const UserListings = ({ token }) => {
 
     return (
         <Box sx={{width: '90%', minHeight: '100vh'}}>
-            {myListings.length ? 
-            <Grid container spacing={3} sx={{alignItems: 'stretch', marginTop: '1px'}}>
-                {myListings.map(({ address, bedrooms, bathrooms, type, price, size, approved, id, imageUrl }, index) => {
-                    return (
-                        <Grid item xs={12} sm={6} md={4} key={index}>
-                            <Item style={{height: '100%', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}} 
-                                  className='listing'>
-                                <div>
-                                    <CardMedia
-                                        component='img'
-                                        src={imageUrl}
-                                        alt='listing-cover'
-                                        sx={{height: '200px'}}
-                                    />
-                                    <CardContent sx={{textAlign: 'left'}}>
-                                        <Typography gutterBottom sx={{color: 'black', fontFamily: 'Kanit'}}>
-                                        {address}
-                                        </Typography>
-                                        <Typography>
-                                        Bedroom(s): {bedrooms}
-                                        </Typography>
-                                        <Typography>
-                                        Bathroom(s): {bathrooms} 
-                                        </Typography>
-                                        <Typography>
-                                        ${price}/month
-                                        </Typography>
-                                        <Typography>
-                                        {size} sqft
-                                        </Typography>
-                                        <Typography>
-                                        Type: {type}
-                                        </Typography>
-                                    </CardContent>
-                                </div>
-                                <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                                    {approved ? <p style={{color: 'green'}}>Approved</p> : <p style={{color: 'red'}}>Not Approved Yet</p>}
-                                    <CardActions disableSpacing>
-                                        <IconButton aria-label="edit" onClick={() => handleEditButton(id)}>
-                                            <EditIcon />
-                                        </IconButton>
-                                        <IconButton aria-label="delete" onClick={() => handleDeleteButton(id)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </CardActions>
-                                </div>
-                            </Item>
+            {loading ? 
+                <div hidden={!loading} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}><CircularProgress sx={{marginTop: '100px'}}/></div>
+                :
+                <div>
+                    {myListings.length ? 
+                        <Grid container spacing={3} sx={{alignItems: 'stretch', marginTop: '1px'}}>
+                            {myListings.map(({ address, bedrooms, bathrooms, type, price, size, approved, id, imageUrl }, index) => {
+                                return (
+                                    <Grid item xs={12} sm={6} md={4} key={index}>
+                                        <Item style={{height: '100%', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}} 
+                                            className='listing'>
+                                            <div>
+                                                <CardMedia
+                                                    component='img'
+                                                    src={imageUrl}
+                                                    alt='listing-cover'
+                                                    sx={{height: '200px'}}
+                                                />
+                                                <CardContent sx={{textAlign: 'left'}}>
+                                                    <Typography gutterBottom sx={{color: 'black', fontFamily: 'Kanit'}}>
+                                                    {address}
+                                                    </Typography>
+                                                    <Typography>
+                                                    Bedroom(s): {bedrooms}
+                                                    </Typography>
+                                                    <Typography>
+                                                    Bathroom(s): {bathrooms} 
+                                                    </Typography>
+                                                    <Typography>
+                                                    ${price}/month
+                                                    </Typography>
+                                                    <Typography>
+                                                    {size} sqft
+                                                    </Typography>
+                                                    <Typography>
+                                                    Type: {type}
+                                                    </Typography>
+                                                </CardContent>
+                                            </div>
+                                            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                                {approved ? <p style={{color: 'green'}}>Approved</p> : <p style={{color: 'red'}}>Not Approved Yet</p>}
+                                                <CardActions disableSpacing>
+                                                    <IconButton aria-label="edit" onClick={() => handleEditButton(id)}>
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                    <IconButton aria-label="delete" onClick={() => handleDeleteButton(id)}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </CardActions>
+                                            </div>
+                                        </Item>
+                                    </Grid>
+                                )
+                            })}
                         </Grid>
-                    )
-                })}
-            </Grid>
-            : <h2 className='small-title'>No Listing Yet.</h2>}
+                        : <h2 className='small-title'>No Listing Yet.</h2>
+                    }
+                </div>
+            }
         </Box>
     );
 }

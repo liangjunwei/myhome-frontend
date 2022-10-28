@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { getAllImages, getListingById, sendMessage, disapproveListingById, approveListingById } from '../api';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
-import { Container, Box, Button, TextField, Switch, FormControlLabel } from '@mui/material';
+import { Container, Box, Button, TextField, Switch, FormControlLabel, CircularProgress } from '@mui/material';
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from 'sweetalert2';
 
 const SingleListing = ({ token, isAdmin }) => {
 
     let navigate = useNavigate();
+
+    const [loading, setLoading] = useState(true);
     
     const { listingId } = useParams();
     const [imageUrls, setImageUrls] = useState([]);
@@ -35,6 +37,7 @@ const SingleListing = ({ token, isAdmin }) => {
         const listingById = await getListingById(listingId);
         setChecked(listingById.approved);
         setListing(listingById);
+        setLoading(false);
     }
 
     const handleSendMessage = async (event) => {
@@ -91,47 +94,53 @@ const SingleListing = ({ token, isAdmin }) => {
     }, []);
 
     return (
-        <Container maxWidth="md" sx={{minHeight: '100vh'}}>
-            {(isAdmin || listing.approved) ?
+        <Container maxWidth="md" sx={{minHeight: '100vh', }}>
+            {loading ? 
+                <div hidden={!loading} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}><CircularProgress sx={{marginTop: '100px'}}/></div>
+                :
                 <div>
-                    {(isAdmin && listing) ? 
-                    <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '20px'}}>
-                        <FormControlLabel
-                            value="start"
-                            control={<Switch checked={checked} onChange={handleApproveListing}color="primary" />}
-                            label="Approved"
-                            labelPlacement="start"
-                        />
-                    </div>
-                    : null}
-                    <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
-                        <h2 className='small-title'>{listing.address}</h2>
-                        <h3 className='listing-info'>Type: {listing.type}</h3>
-                        <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>
-                        <h3 className='listing-info'>Bathroom(s): {listing.bathrooms}</h3>
-                        <h3 className='listing-info'>${listing.price}/month</h3>
-                        <h3 className='listing-info'>{listing.size} sqft</h3>
-                        <h3 className='listing-info'>Parking Space: {listing.parking}</h3>
-                        {listing.pets ? <h3 className='listing-info'>Pets Allowed</h3> : <h3 className='listing-info'>Pets Not Allowed</h3>}
-                        <h3 className='listing-info'>Post by {listing.username}</h3>
-                    </Box>
-                    <ImageGallery items={imageUrls} showPlayButton={false} showFullscreenButton={false} />
-                    <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
-                        <h3 className='small-title'>Interested in this post? Send a message to owner!</h3>
-                        <form onSubmit={handleSendMessage}  style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                            <TextField fullWidth id='send-message' label='Message' variant='outlined' value={message}
-                            margin="normal" required onChange={(e) => setMessage(e.target.value)}
-                            />
-                            <Button fullWidth id='reply-button' variant='contained' type='submit' size="large"
-                                    sx={{marginTop: '10px', marginBottom: '20px'}}
-                            >
-                                Send
-                            </Button>
-                        </form>
-                    </Box>
+                    {( (isAdmin && listing.approved !== undefined) || (listing.approved === true) ) ?
+                        <div>
+                            {(isAdmin && listing) ? 
+                            <div style={{display: 'flex', flexDirection: 'row-reverse', marginTop: '20px'}}>
+                                <FormControlLabel
+                                    value="start"
+                                    control={<Switch checked={checked} onChange={handleApproveListing}color="primary" />}
+                                    label="Approved"
+                                    labelPlacement="start"
+                                />
+                            </div>
+                            : null}
+                            <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
+                                <h2 className='small-title'>{listing.address}</h2>
+                                <h3 className='listing-info'>Type: {listing.type}</h3>
+                                <h3 className='listing-info'>Bedroom(s): {listing.bedrooms}</h3>
+                                <h3 className='listing-info'>Bathroom(s): {listing.bathrooms}</h3>
+                                <h3 className='listing-info'>${listing.price}/month</h3>
+                                <h3 className='listing-info'>{listing.size} sqft</h3>
+                                <h3 className='listing-info'>Parking Space: {listing.parking}</h3>
+                                {listing.pets ? <h3 className='listing-info'>Pets Allowed</h3> : <h3 className='listing-info'>Pets Not Allowed</h3>}
+                                <h3 className='listing-info'>Post by {listing.username}</h3>
+                            </Box>
+                            <ImageGallery items={imageUrls} showPlayButton={false} showFullscreenButton={false} />
+                            <Box sx={{marginTop: '20px', marginBottom: '20px'}}>
+                                <h3 className='small-title'>Interested in this post? Send a message to owner!</h3>
+                                <form onSubmit={handleSendMessage}  style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                    <TextField fullWidth id='send-message' label='Message' variant='outlined' value={message}
+                                    margin="normal" required onChange={(e) => setMessage(e.target.value)}
+                                    />
+                                    <Button fullWidth id='reply-button' variant='contained' type='submit' size="large"
+                                            sx={{marginTop: '10px', marginBottom: '20px'}}
+                                    >
+                                        Send
+                                    </Button>
+                                </form>
+                            </Box>
+                        </div>
+                        : 
+                        <h2 className='small-title' style={{marginTop: '20px'}}>Unauthorized Error</h2>
+                    }
                 </div>
-                : 
-                <h2 className='small-title' style={{marginTop: '20px'}}>Unauthorized Error</h2>
             }
         </Container>
     );
